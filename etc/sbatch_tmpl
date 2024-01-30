@@ -1,13 +1,12 @@
 #!/usr/bin/bash
 #SBATCH --job-name=swei_jedi
 #SBATCH --nodes=1
-##SBATCH --ntasks=6
-##SBATCH --cpus-per-task=1
-#SBATCH --account=da-cpu
-#SBATCH --partition=orion
-#SBATCH --qos=batch
+#SBATCH --ntasks=6
 #SBATCH --time=0:30:00
-#SBATCH --output=/work2/noaa/jcsda/shihwei/slurmlogs/testjedi.%j
+#SBATCH --account=%ACCOUNT%
+#SBATCH --partition=%PARTITION%
+#SBATCH --qos=%QOS%
+#SBATCH --output=%LOGFILE%
 
 set -x
 

@@ -1,9 +1,19 @@
 #!/usr/bin/env python3
 __all__ = ['run_job','check_job']
 import subprocess
+import os
 
 def run_job(script):
-    return subprocess.check_output(["sbatch", script])
+    stdout = subprocess.check_output(["sbatch", script]).decode('utf-8')
+    print(stdout,flush=1)
+    return stdout
 
-def check_job():
-    return subprocess.check_output(["squeue", "-u", getuser()])[-1]
+def check_job(jobid):
+    stdout = subprocess.check_output(["squeue", "-j", jobid]).decode('utf-8')
+    if jobid in stdout:
+        status = 0
+        print(stdout,flush=1)
+    else:
+        status = 1
+        print('JOB ID: '+jobid+' Finished',flush=1)
+    return status
