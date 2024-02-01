@@ -11,12 +11,15 @@
 set -x
 
 source /etc/bashrc
-source /home/shihwei/.bashrc
-load_skylab
+source ${HOME}/.bashrc
+load_skylab 
 module list
 
 export SLURM_EXPORT_ENV=ALL
 export HDF5_USE_FILE_LOCKING=FALSE
+
+export OOPS_TRACE=1
+export OOPS_DEBUG=1
 
 ulimit -s unlimited || true
 ulimit -v unlimited || true

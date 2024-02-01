@@ -1,0 +1,123 @@
+time window:
+  begin: 2020-09-03T18:00:00Z
+  length: PT6H
+geometry:
+  function space: StructuredColumns
+  partitioner: "checkerboard"
+  # units: "meters"
+  grid:
+    type : "regional"
+    nx : 222
+    ny : 198
+    dx : 4000.0
+    dy : 4000.0
+    lonlat(centre) : [-75.1618,42.90771]
+    #lonlat(xmin,ymin): [-81.634705,38.214104]
+    projection :
+        type : "lambert_conformal_conic"
+        longitude0 : -97.0
+        latitude0 : 39.0
+        latitude1  : 30.0
+        latitude2  : 60.0
+        radius: 6370000
+
+  groups:
+  - map jedi names:
+      DUST_1: mass_fraction_of_dust001_in_air
+      DUST_2: mass_fraction_of_dust002_in_air
+      DUST_3: mass_fraction_of_dust003_in_air
+      DUST_4: mass_fraction_of_dust004_in_air
+      DUST_5: mass_fraction_of_dust005_in_air
+      SEAS_1: mass_fraction_of_seas001_in_air
+      SEAS_2: mass_fraction_of_seas003_in_air
+      SEAS_3: mass_fraction_of_seas004_in_air
+      SEAS_4: mass_fraction_of_seas005_in_air
+      OC1: mass_fraction_of_hydrophobic_organic_carbon_in_air
+      OC2: mass_fraction_of_hydrophilic_organic_carbon_in_air
+      BC1: mass_fraction_of_hydrophobic_black_carbon_in_air
+      BC2: mass_fraction_of_hydrophilic_black_carbon_in_air
+      sulf: mass_fraction_of_sulfate_in_air
+      air_temperature: air_temperature
+    vertical coordinate: akbk
+    # need to satisfy P = ak + Ps*bk
+    # e.g. from WRF
+    # ak = C4F + Pt - C3F*Pt
+    # bk = C3F
+    ak: [0.000e+00, 5.000e-02, 2.000e-01, 4.000e-01, 7.500e-01,
+         1.250e+00, 1.850e+00, 2.550e+00, 3.400e+00, 4.350e+00,
+         5.450e+00, 6.800e+00, 7.850e+00, 8.800e+00, 9.600e+00,
+         1.035e+01, 1.085e+01, 1.135e+01, 1.210e+01, 1.305e+01,
+         1.445e+01, 1.670e+01, 2.005e+01, 2.350e+01, 2.675e+01,
+         2.970e+01, 3.230e+01, 3.390e+01, 3.515e+01, 3.610e+01,
+         3.690e+01, 3.755e+01, 3.810e+01, 3.860e+01, 3.920e+01,
+         4.000e+01, 4.110e+01, 4.240e+01, 4.395e+01, 4.550e+01,
+         4.705e+01, 4.860e+01, 5.000e+01]
+    bk: [1.000, 0.999, 0.996, 0.992, 0.985,
+         0.975, 0.963, 0.949, 0.932, 0.913,
+         0.891, 0.864, 0.843, 0.824, 0.808,
+         0.793, 0.783, 0.773, 0.758, 0.739,
+         0.711, 0.666, 0.599, 0.53, 0.465,
+         0.406, 0.354, 0.322, 0.297, 0.278,
+         0.262, 0.249, 0.238, 0.228, 0.216,
+         0.200, 0.178, 0.152, 0.121, 0.090,
+         0.059, 0.028, 0.0]
+    pt_base: 300
+
+    levels: 42
+    top pressure: 50
+  - map jedi names:
+      air_pressure_levels: air_pressure_levels
+    levels: 43
+  - map jedi names:
+      PSFC: surface_pressure
+    levels: 1
+
+state:
+  state variables:
+  - DUST_1
+  - DUST_2
+  - DUST_3
+  - DUST_4
+  - DUST_5
+  - SEAS_1
+  - SEAS_2
+  - SEAS_3
+  - SEAS_4
+  - BC1
+  - BC2
+  - OC1
+  - OC2
+  - sulf
+  - T
+  - PSFC
+  filepath: model_in_file
+  #filepath: Data/background/wrfout_d01_subset_20230519_000000
+  netcdf extension: nc
+  date: '2020-09-03T21:00:00Z'
+
+observations:
+  observers:
+  - obs space:
+      name: viirs_npp_aod-thinned
+      obsdatain:
+        engine:
+          type: H5File
+          #obsfile: tropomi_no2_tropo_%valid_date%_m_singleobs.nc4
+      obsdataout:
+        engine:
+          type: H5File
+          #obsfile: output/tropomi_no2_hofx_wrfout_%valid_date%_m.nc
+      _source: noaa
+      simulated variables: [aerosolOpticalDepth]
+      observed variables: [aerosolOpticalDepth]
+      channels: 4
+    obs operator:
+      name: AodCRTM
+      Absorbers: [H2O,O3]
+      obs options:
+        Sensor_ID: v.viirs-m_npp
+        EndianType: little_endian
+        CoefficientPath: CRTM/
+        AerosolOption: aerosols_gocart_default
+    obs error:
+      covariance model: diagonal
