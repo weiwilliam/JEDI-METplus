@@ -1,2 +1,4 @@
 /workdir/*
 /stats/*
+/plots/*
+/hofx/*
