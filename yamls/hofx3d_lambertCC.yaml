@@ -64,7 +64,6 @@ state:
   - co
   - PSFC
   filepath: model_in_file
-  #filepath: Data/background/wrfout_d01_subset_20230519_000000
   netcdf extension: nc
   date: '2020-09-03T21:00:00Z'
 
@@ -75,13 +74,9 @@ observations:
       obsdatain:
         engine:
           type: H5File
-          obsfile: Data/observation/tropomi_no2_tropo_%date%_m_singleobs.nc4
-          #obsfile: Data/observation/tropomi_no2_tropo_2020090318_m_singleobs.nc4
       obsdataout:
         engine:
           type: H5File
-          obsfile: output/tropomi_no2_hofx_wrfout_%date%_m.nc
-          #obsfile: output/tropomi_no2_hofx_wrfout_%date%_m.nc
       simulated variables: [nitrogendioxideColumn]
     obs operator:
       model units coeff: 1E-6
@@ -93,3 +88,15 @@ observations:
       stretchVertices: topbottom #options: top, bottom, topbottom, none
     obs error:
       covariance model: diagonal
+    obs filters:
+      - filter: Domain Check
+        where:
+        - variable: 
+            name: MetaData/latitude
+          minvalue: 41.
+          maxvalue: 45.
+        - variable: 
+            name: MetaData/latitude
+          minvalue: -80.
+          maxvalue: -73.
+        

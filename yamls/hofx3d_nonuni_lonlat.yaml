@@ -1,0 +1,80 @@
+time window:
+  begin: 2020-09-03T18:00:00Z
+  length: PT6H
+geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_lonlat
+    nx: 30
+    ny: 20
+  groups:
+  - map jedi names:
+      NO2: volume_mixing_ratio_of_no2
+      CO: volume_mixing_ratio_of_co
+    levels: 56
+    vertical coordinate: akbk
+    ak: [1.65078999e+02, 2.08497001e+02, 2.62021110e+02, 3.27643100e+02,
+         4.07657120e+02, 5.04680118e+02, 6.21680077e+02, 7.61984196e+02,
+         9.29294154e+02, 1.12768998e+03, 1.36433998e+03, 1.64570995e+03,
+         1.97915994e+03, 2.37304103e+03, 2.83678100e+03, 3.38100083e+03,
+         4.01754119e+03, 4.76439111e+03, 5.63879088e+03, 6.66034073e+03,
+         7.85123110e+03, 9.23657194e+03, 1.08663000e+04, 1.27837002e+04,
+         1.50392994e+04, 1.76929995e+04, 2.01192006e+04, 2.16865003e+04,
+         2.24362999e+04, 2.23897994e+04, 2.18776003e+04, 2.12149993e+04,
+         2.03259006e+04, 1.93096995e+04, 1.81619003e+04, 1.69608995e+04,
+         1.56259999e+04, 1.42910004e+04, 1.28695905e+04, 1.18958600e+04,
+         1.09181702e+04, 9.93652120e+03, 8.90999213e+03, 7.88342208e+03,
+         7.06219822e+03, 6.43626377e+03, 5.80532104e+03, 5.16961105e+03,
+         4.53390107e+03, 3.89820114e+03, 3.25708091e+03, 2.60920096e+03,
+         1.96131095e+03, 1.31347999e+03, 6.59375219e+02, 4.80482595e+00,
+         0.00000000e+00]
+    bk: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 8.17541323527848e-09, 0.00696002505719662, 0.0280100405216217,
+    0.0637200623750687, 0.113602101802826, 0.156224101781845,
+    0.200350105762482, 0.246741101145744, 0.294403105974197,
+    0.343381106853485, 0.392891108989716, 0.44374018907547,
+    0.494590193033218, 0.546304225921631, 0.581041514873505,
+    0.615818381309509, 0.65063488483429, 0.685899913311005,
+    0.721166014671326, 0.749378204345703, 0.770637512207031,
+    0.791946887969971, 0.813303887844086, 0.834660887718201,
+    0.856018006801605, 0.877429008483887, 0.898908019065857,
+    0.920387029647827, 0.941865026950836, 0.963406026363373,
+    0.984951972961426, 1]
+  - map jedi names:
+      air_pressure_levels: air_pressure_levels
+    levels: 57
+  - map jedi names:
+      PS: surface_pressure
+    levels: 1
+
+state:
+  state variables:
+  - NO2
+  - CO
+  - PS
+  filepath: Data/background/camchem_N30x20_subset
+  netcdf extension: nc
+  date: '2020-09-03T21:00:00Z'
+
+observations:
+  observers:
+  - obs space:
+      name: NO2
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/observation/tropomi_no2_tropo_2020090318_m.nc4
+      obsdataout:
+        engine:
+          type: H5File
+          obsfile: testoutput/tropomi_no2_hofx_camchem_2020090318_m.nc
+      simulated variables: [nitrogendioxideColumn]
+    obs operator:
+      name: ColumnRetrieval
+      nlayers_retrieval: 34
+      tracer variables: [NO2]
+      isApriori: false
+      isAveragingKernel: true
+      stretchVertices: topbottom #options: top, bottom, topbottom, none
+    obs error:
+      covariance model: diagonal

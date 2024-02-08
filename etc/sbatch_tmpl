@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 #SBATCH --job-name=swei_jedi
 #SBATCH --nodes=1
-#SBATCH --ntasks=6
+#SBATCH --ntasks=1
 #SBATCH --time=0:30:00
 #SBATCH --account=%ACCOUNT%
 #SBATCH --partition=%PARTITION%
@@ -9,11 +9,6 @@
 #SBATCH --output=%LOGFILE%
 
 set -x
-
-source /etc/bashrc
-source ${HOME}/.bashrc
-load_skylab 
-module list
 
 export SLURM_EXPORT_ENV=ALL
 export HDF5_USE_FILE_LOCKING=FALSE
