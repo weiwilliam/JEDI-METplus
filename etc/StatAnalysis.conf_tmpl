@@ -20,7 +20,7 @@ LEAD_SEQ = 24
 # https://metplus.readthedocs.io/en/latest/Users_Guide/systemconfiguration.html#directory-and-filename-template-info
 ###
 
-STAT_ANALYSIS_OUTPUT_DIR = {OUTPUT_BASE}/statanalysis_output
+STAT_ANALYSIS_OUTPUT_DIR = {OUTPUT_BASE}/../Data/output/stats
 STAT_ANALYSIS_OUTPUT_TEMPLATE = {valid?fmt=%Y%m%d%H}.out
 
 ###

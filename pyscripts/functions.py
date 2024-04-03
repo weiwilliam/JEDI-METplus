@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-__all__ = ['run_job','check_job','get_dates','set_size']
+__all__ = ['run_job','check_job','get_dates','set_size','setup_cmd']
 import subprocess
 import os
 import pandas as pd
@@ -52,3 +52,16 @@ def set_size(w,h, ax=None, l=None, r=None, t=None, b=None):
     figh = float(h)/(t-b)
     ax.figure.set_size_inches(figw, figh)
 
+def setup_cmd(conf):
+    from shutil import which
+
+    if conf['platform'] == 's4':
+        execcmd = which('srun')+' --cpu_bind=core'
+    elif conf['platform'] == 'orion':
+        execcmd = which('mpirun')
+    elif conf['platform'] == 'derecho':
+        execcmd = which('mpiexec')+' -n %s -ppn %s' % (conf['n_nodes'],str(conf['n_tasks']/conf['n_nodes']) )
+    else:
+        raise Exception('Not supported platform')
+
+    return execcmd
