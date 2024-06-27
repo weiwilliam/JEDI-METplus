@@ -56,11 +56,12 @@ def setup_cmd(conf):
     from shutil import which
 
     if conf['platform'] == 's4':
-        execcmd = which('srun')+' --cpu_bind=core'
+        # execcmd = which('srun')+' --cpu_bind=core'
+        execcmd = which('mpiexec')+' -n %s' % (conf['n_task'])
     elif conf['platform'] == 'orion':
         execcmd = which('mpirun')
     elif conf['platform'] == 'derecho':
-        execcmd = which('mpiexec')+' -n %s -ppn %s' % (conf['n_nodes'],str(conf['n_tasks']/conf['n_nodes']) )
+        execcmd = which('mpiexec')+' -n %s -ppn %s' % (conf['n_node'],str(conf['n_task']/conf['n_node']) )
     else:
         raise Exception('Not supported platform')
 

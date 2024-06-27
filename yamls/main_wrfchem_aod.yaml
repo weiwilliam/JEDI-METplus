@@ -1,0 +1,33 @@
+time:
+  sdate: 2024011718
+  edate: 2024012418
+  dateint: 24
+genint:
+  build: /data/users/swei/Git/JEDI/qxx-genint/build
+  jediexec: quenchxx_hofx3d.x
+  jediyaml: AOD_hofx3d_lambertCC.yaml
+  obsname: v.viirs-m_npp
+  bkgname: wrfchem
+  simulated_varname: aerosolOpticalDepth
+Data:
+  input: 
+    obs: '/data/users/swei/Dataset/VIIRS_NPP/ioda_viirs_aod-wxaq'
+    bkg: '/data/users/swei/Dataset/Wx-AQ'
+    crtm: '/data/users/swei/Git/JEDI/qxx-genint/build/crtm/test/testinput'
+  output: /data/users/swei/Git/JEDI/JEDI-METplus/output
+  obs_template: wxaq-VIIRS_NPP_%Y%m%d%H.nc
+  bkg_template: wrfgsi.out.%Y%m%d%H/wrfout_d01_%Y%m%d_%H0000
+metplus:
+  verify_fhours: [6]
+  met_conf_temp: StatAnalysis.conf_tmpl
+  ioda2metmpr: ioda2metplusmpr.py 
+jobconf:
+  platform: s4
+  jobname: qxxgenint_wrfchem
+  n_node: 1
+  n_task: 1
+  walltime: '0:30:00'
+  account: star
+  partition: s4
+  qos: normal
+  check_freq: 10

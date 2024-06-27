@@ -128,8 +128,12 @@ for cdate in dates:
         with open(in_sbatch_tmpl, 'r') as file:
             content = file.read()
         new_content = content.replace('%ACCOUNT%',jobconf['account'])
+        new_content = new_content.replace('%JOBNAME%',jobconf['jobname'])
         new_content = new_content.replace('%PARTITION%',jobconf['partition'])
+        new_content = new_content.replace('%WALLTIME%',jobconf['walltime'])
         new_content = new_content.replace('%QOS%',jobconf['qos'])
+        new_content = new_content.replace('%N_NODE%',str(jobconf['n_node']))
+        new_content = new_content.replace('%N_TASK%',str(jobconf['n_task']))
         new_content = new_content.replace('%LOGFILE%',logfile)
         with open(wrksbatch,'w') as file:
             file.write(new_content)

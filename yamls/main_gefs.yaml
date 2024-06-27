@@ -1,0 +1,30 @@
+time:
+  sdate: 2024012100
+  edate: 2024012100
+  dateint: 24
+jobconf:
+  platfrom: s4
+  jobname: genint_gefs
+  n_node: 1
+  n_task: 6
+  account: star
+  partition: s4
+  qos: normal
+  check_freq: 10
+genint:
+  build: /data/users/swei/Git/JEDI/genint-bundle/build 
+  jediexec: genint_hofx3d.x
+  jediyaml: AOD_hofx3d_lambertCC.yaml
+Data:
+  input: /data/users/swei/Git/JEDI/JEDI-METplus/input
+  link:
+    - obs: '/data/users/swei/Dataset/VIIRS_NPP/ioda_viirs_aod'
+    - bkg: '/ships19/aqda/lenzen/JPSS/GEFS_AER/%Y%m'
+    - crtm: '/data/users/swei/Git/JEDI/genint-bundle/build/crtm/test/testinput'
+  output: /data/users/swei/Git/JEDI/JEDI-METplus/output
+  obs_template: 'VIIRS_NPP_%Y%m%d%H.nc'
+  bkg_template: 'wrfout_d01_%Y%m%d_%H0000'
+metplus:
+  verify_fhours: [6]
+  met_conf_temp: StatAnalysis.conf_tmpl
+  ioda2metmpr: ioda2metplusmpr.py 

@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
 echo "Loading EWOK-SKYLAB Environment Using Spack-Stack 1.5.1"
 
 # load modules

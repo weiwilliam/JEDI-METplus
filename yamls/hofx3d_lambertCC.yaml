@@ -1,5 +1,5 @@
 time window:
-  begin: 2020-09-03T18:00:00Z
+  begin: define_every_cycle
   length: PT6H
 geometry:
   function space: StructuredColumns
@@ -63,26 +63,28 @@ state:
   - no2
   - co
   - PSFC
-  filepath: model_in_file
+  filepath: define_every_cycle
   netcdf extension: nc
-  date: '2020-09-03T21:00:00Z'
+  date: define_every_cycle
 
 observations:
   observers:
   - obs space:
-      name: NO2
+      name: define_in_mainyaml
       obsdatain:
         engine:
           type: H5File
+          obsfile: define_every_cycle
       obsdataout:
         engine:
           type: H5File
-      simulated variables: [nitrogendioxideColumn]
+          obsfile: define_every_cycle
+      simulated variables: define_in_mainyaml
     obs operator:
       model units coeff: 1E-6
       name: ColumnRetrieval
       nlayers_retrieval: 34
-      tracer variables: [no2]
+      tracer variables: define_in_mainyaml
       isApriori: false
       isAveragingKernel: true
       stretchVertices: topbottom #options: top, bottom, topbottom, none
@@ -96,7 +98,7 @@ observations:
           minvalue: 41.
           maxvalue: 45.
         - variable: 
-            name: MetaData/latitude
+            name: MetaData/longitude
           minvalue: -80.
           maxvalue: -73.
         

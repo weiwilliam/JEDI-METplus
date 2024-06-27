@@ -1,0 +1,33 @@
+time:
+  sdate: 2024011718
+  edate: 2024011718
+  dateint: 24
+genint:
+  build: /data/users/swei/Git/JEDI/genint-bundle/build 
+  jediexec: genint_hofx3d.x
+  jediyaml: hofx3d_lambertCC.yaml
+  obsname: tropomino2
+  bkgname: wrfchem
+  simulated_varname: nitrogendioxideTotal
+  tracer_name: no2
+Data:
+  input: 
+    obs: '/data/users/swei/Dataset/S5P_TROPOMI'
+    bkg: '/data/users/swei/Dataset/Wx-AQ'
+    crtm: '/data/users/swei/Git/JEDI/genint-bundle/build/crtm/test/testinput'
+  output: /data/users/swei/Git/JEDI/JEDI-METplus/output
+  obs_template: cropped_tropomi_no2_total_%Y%m%d%H.nc
+  bkg_template: wrfgsi.out.%Y%m%d%H/wrfout_d01_%Y%m%d_%H0000
+metplus:
+  verify_fhours: [6]
+  met_conf_temp: StatAnalysis.conf_tmpl
+  ioda2metmpr: ioda2metplusmpr.py 
+jobconf:
+  platform: s4
+  jobname: genint_wrfchem
+  n_node: 1
+  n_task: 1
+  account: star
+  partition: s4
+  qos: normal
+  check_freq: 10

@@ -1,8 +1,8 @@
-#!/usr/bin/bash
-#SBATCH --job-name=swei_jedi
-#SBATCH --nodes=1
-#SBATCH --ntasks=1
-#SBATCH --time=0:30:00
+#!/usr/bin/env bash
+#SBATCH --job-name=%JOBNAME%
+#SBATCH --nodes=%N_NODE%
+#SBATCH --ntasks=%N_TASK%
+#SBATCH --time=%WALLTIME%
 #SBATCH --account=%ACCOUNT%
 #SBATCH --partition=%PARTITION%
 #SBATCH --qos=%QOS%

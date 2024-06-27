@@ -20,20 +20,22 @@ minlat = 40.2; maxlat = 45.;
 minlon = -80.; maxlon = -71.5;
 
 plot_date = 2024012118
-plot_product = 'tropomi_no2_total'
-unit_str = 'mol m$^{-2}$'
-hofx_file = 'hofx_cropped_%s_%s.nc' %(plot_product,plot_date)
+plot_product = 'v.viirs-m_npp_wrfchem' # 'tropomi_no2_total'
+unit_str = ' ' #'mol m$^{-2}$'
+hofx_file = 'hofx_wxaq-VIIRS_NPP_%s.nc' %(plot_date)
+# hofx_file = 'hofx_cropped_%s_%s.nc' %(plot_product,plot_date)
 
 pltvar_mapdict = {'tropomi_no2_total':'nitrogendioxideTotal',
                   'tropomi_no2_tropo':'nitrogendioxideColumn',
-                  'tropomi_co_total':'carbonmonoxideTotal'
+                  'tropomi_co_total':'carbonmonoxideTotal',
+                  'v.viirs-m_npp_wrfchem':'aerosolOpticalDepth',
                  }
 
 plot_var = pltvar_mapdict[plot_product]
 
 srcpath = os.path.join(os.path.dirname(__file__),'..')
-hofx_path = os.path.join(srcpath,'hofx',plot_product)
-plts_path = os.path.join(srcpath,'plots','2dmap')
+hofx_path = os.path.join(srcpath,'output',plot_product,'hofx')
+plts_path = os.path.join(srcpath,'output','plots','2dmap')
 
 if not os.path.exists(hofx_path):
     raise Exception('HofX of '+plot_product+' is not available')
@@ -41,7 +43,7 @@ if not os.path.exists(hofx_path):
 if not os.path.exists(plts_path):
     os.makedirs(plts_path)
 
-in_hofx = os.path.join(srcpath,'hofx',plot_product,hofx_file)
+in_hofx = os.path.join(hofx_path,hofx_file)
 
 # Setup projection
 proj = ccrs.LambertConformal(central_longitude=-97.0,

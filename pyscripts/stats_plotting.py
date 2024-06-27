@@ -14,13 +14,13 @@ axe_h = 3
 sdate = 2024011718
 edate = 2024012318
 vrfy_freq = 24
-vrfy_product = 'tropomi_no2_tropo'
+vrfy_product = 'v.viirs-m_npp_wrfchem' # 'tropomi_no2_tropo'
 vrfy_stat = 'SL1L2'
-unit_str = 'mol m$^{-2}$'
+unit_str = '' # 'mol m$^{-2}$'
 
 srcpath = os.path.join(os.path.dirname(__file__),'..')
-stats_path = os.path.join(srcpath,'stats',vrfy_product)
-plts_path = os.path.join(srcpath,'plots')
+stats_path = os.path.join(srcpath,'output',vrfy_product,'stats')
+plts_path = os.path.join(srcpath,'output',vrfy_product,'plots')
 
 if not os.path.exists(stats_path):
     raise Exception('Stats of '+vrfy_product+' is not available')
