@@ -66,7 +66,13 @@ os.symlink(outpath, 'Data/output')
 wlnth = timedelta(hours=window_length)
 dates = get_dates(timeconf['sdate'], timeconf['edate'], timeconf['dateint'])
 
-in_sbatch_tmpl = os.path.join(srcpath,'etc','sbatch_tmpl')
+slurm_platforms = ['s4', 'orion', 'discover']
+pbs_platforms = ['derecho']
+if jobconf['platform'] in slurm_platforms:
+    in_jobhead = os.path.join(srcpath,'etc','jobhead_slurm')
+elif jobconf['platform'] in pbs_platforms:
+    in_jobhead = os.path.join(srcpath,'etc','jobhead_pbs')
+
 fullexec = os.path.join(genintconf['build'], 'bin', genintconf['jediexec'])
 wrksbatch = os.path.join(wrkpath,'runscript')
 wrkyaml = os.path.join(wrkpath,'running.yaml')
@@ -125,7 +131,7 @@ for cdate in dates:
             yaml.dump(conf_temp,f) 
 
         # Update jobcard
-        with open(in_sbatch_tmpl, 'r') as file:
+        with open(in_jobhead, 'r') as file:
             content = file.read()
         new_content = content.replace('%ACCOUNT%',jobconf['account'])
         new_content = new_content.replace('%JOBNAME%',jobconf['jobname'])
@@ -135,15 +141,15 @@ for cdate in dates:
         new_content = new_content.replace('%N_NODE%',str(jobconf['n_node']))
         new_content = new_content.replace('%N_TASK%',str(jobconf['n_task']))
         new_content = new_content.replace('%LOGFILE%',logfile)
-        with open(wrksbatch,'w') as file:
+        with open(wrkjobcard,'w') as file:
             file.write(new_content)
 
         execcmd = setup_cmd(jobconf)
         cmd_str = execcmd+' '+fullexec+' '+wrkyaml #+' 2> stderr.$$.log 1> stdout.$$.log'
-        with open(wrksbatch,'a') as f:
+        with open(wrkjobcard,'a') as f:
             f.write(cmd_str)
     
-        output = run_job(wrksbatch)
+        output = run_job(wrkjobcard)
         jobid = output.split()[-1]
         status = 0
         while status == 0:
