@@ -3,7 +3,7 @@ Workflow to interface JEDI component (generic-interface) and METplus for constit
 
 ## Clone the code
 Clone this repo recusively with the command below
-`git clone --recurse-submodules`
+`git clone https://github.com/weiwilliam/JEDI-METplus.git [folder]`
 
 ## Supported platforms
 * Platforms with JCSDA spack-stack package, now provide derecho_intel module loading script.
