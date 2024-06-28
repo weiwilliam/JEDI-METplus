@@ -17,8 +17,8 @@ from metplus import __version__ as metplus_version
 from functions import run_job, check_job, setup_cmd, get_dates
 
 # Load the configuration defined by main yaml file
-control_yaml = sys.argv[1]
-conf = yaml.load(open(control_yaml),Loader=yaml.FullLoader)
+main_yaml = sys.argv[1]
+conf = yaml.load(open(main_yaml),Loader=yaml.FullLoader)
 timeconf = conf['time']
 metconf = conf['metplus']
 jobconf = conf['jobconf']

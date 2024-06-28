@@ -1,0 +1,87 @@
+# Ignore these files anywhere in the tree
+*DS_Store*
+*.[aox]
+*.so
+*.mod
+*.pyc
+*.v3breakpoints
+*.swp
+*.sublime-workspace
+*~
+git_branches_as_of_*
+
+# Ignore the contents of these directories
+build*/
+
+# ECMWF libraries
+atlas/
+eckit/
+fckit/
+
+# GSIBEC
+gsibec/
+
+# optional obs dependencies
+oasim/
+rttov/
+
+# JEDI core repos
+jedicmake/
+saber/
+odc/
+odyssey/
+iodaconv/
+ioda/
+vader/
+oops/
+ufo/
+ewok/
+skylab/
+
+# SOCA
+soca/
+mom6
+
+# FMS
+fms/
+
+# UFS
+ufs/
+
+# fv3-jedi and related repos
+fv3/
+femps/
+fv3-jedi-lm/
+fv3-jedi/
+
+# mpas-jedi and related repos
+mpas/
+mpas-jedi/
+
+# Observation operators
+crtm/
+gsw/
+geos-aero/
+ropp-ufo/
+
+# Test data
+fv3-jedi-data/
+test-data-release/
+ioda-data/
+ufo-data/
+mpas-jedi-data/
+static-data/
+
+# Coupled fv3-jedi + soca
+coupling/
+
+solo/
+ewok/
+r2d2/
+r2d2-data/
+simobs/
+
+
+Testing/
+
+EWOK_TMP/
