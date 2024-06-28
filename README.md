@@ -10,9 +10,19 @@ Clone this repo recusively with the command below
 
 ## Supported (Tested) models 
 * Lambert CC projection: WRF-Chem
+* Regular Lat-Lon (under testing)
 
 ## Supported (Tested) measurements
-* TropOMI NO2 and CO 
+* TropOMI NO2 and CO
+* VIIRS AOD
+* 
+
+## Use of this interface
+* Prerequisites: observation files in IODA format and model outputs in NetCDF (GRIB2 may be supported later).
+1. Based on your application, copy a main yaml file from yamls/main and a hofx3d yaml file from yamls/hofx3d.
+   <e.g., evaluate wrf-chem trace gas, copy `main/main_wrfchem.yaml` and `hofx3d/hofx3d_lambertCC.yaml`>
+2. Update the main and hofx3d yaml files as needed. Check README.md under `yamls/<main/hofx3d>` for details.
+3. Execute `pyscripts/genint_vrfy.py <main yaml>`
 
 ## Installation of generic interface
 1. Create the `build/genint` folder
@@ -22,8 +32,3 @@ Clone this repo recusively with the command below
 5. `ecbuild <path/to/genint-bundle>`
 6. `make -j<n>`
 7. ``
-
-## Use of this interface
-* prerequisites: observation files in IODA format and model outputs in NetCDF.
-
-
