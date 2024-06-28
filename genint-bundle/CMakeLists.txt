@@ -49,7 +49,7 @@ ecbuild_bundle( PROJECT gsw      GIT "https://github.com/jcsda-internal/GSW-Fort
 ecbuild_bundle( PROJECT ioda     GIT "https://github.com/jcsda-internal/ioda.git"        BRANCH develop UPDATE )
 ecbuild_bundle( PROJECT ufo      GIT "https://github.com/jcsda-internal/ufo.git"         BRANCH develop UPDATE )
 
-ecbuild_bundle( PROJECT quenchxx       GIT "https://github.com/weilliam/quenchxx.git"       BRANCH feature/append_constants UPDATE)
+ecbuild_bundle( PROJECT quenchxx       GIT "https://github.com/weiwilliam/quenchxx.git"       BRANCH feature/append_constants UPDATE)
 ecbuild_bundle( PROJECT quenchxx_test  GIT "https://github.com/benjaminmenetrier/quenchxx_test.git"  BRANCH develop UPDATE)
 
 # ecbuild_bundle( PROJECT genint    GIT "https://github.com/jeromebarre/genint.git"          BRANCH update_wrfchem )
