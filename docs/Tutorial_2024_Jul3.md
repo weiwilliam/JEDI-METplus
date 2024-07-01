@@ -42,4 +42,4 @@ Then METplus reads hofx and obs value to calculate the statistics through Model 
    * `check_freq: <whatever you like, in second>`
      * YAML key `partition` is not used in PBS jobhead
 4. Copy `yamls/hofx3d/hofx3d_lambertCC.yaml` to `yamls/hofx3d_lambertCC.yaml`, and update the hofx3d YAML file as needed (Not required today)
-5. `genint_vrfy.py `
+5. `genint_vrfy.py yamls/main.yaml`
