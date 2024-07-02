@@ -14,7 +14,8 @@ import produtil.setup
 from metplus.util import metplus_check
 from metplus.util import pre_run_setup, run_metplus, post_run_cleanup
 from metplus import __version__ as metplus_version
-from functions import run_job, check_job, setup_cmd, get_dates
+from functions import setup_job, setup_cmd, get_dates
+# from functions import run_job, check_job, setup_cmd, get_dates
 
 # Load the configuration defined by main yaml file
 main_yaml = sys.argv[1]
@@ -27,7 +28,7 @@ dataconf = conf['Data']
 
 window_length = 6
 
-# Construct the work and output folders
+# Create work and output folders
 casename = genintconf['obsname'] + '_' + genintconf['bkgname']
 srcpath = os.path.join(os.path.dirname(__file__), '..') 
 wrkpath = os.path.join(srcpath, 'workdir')
@@ -59,6 +60,7 @@ for dir in pathlist:
 
 os.chdir(wrkpath)
 
+# Create symbolic links of needed input folders and the output directory
 for dir in ['bkg','obs','crtm']:
     os.symlink(dataconf['input'][dir], os.path.join(inpath,dir))
 os.symlink(outpath, 'Data/output')
@@ -66,16 +68,19 @@ os.symlink(outpath, 'Data/output')
 wlnth = timedelta(hours=window_length)
 dates = get_dates(timeconf['sdate'], timeconf['edate'], timeconf['dateint'])
 
-slurm_platforms = ['s4', 'orion', 'discover']
-pbs_platforms = ['derecho']
-if jobconf['platform'] in slurm_platforms:
-    in_jobhead = os.path.join(srcpath,'etc','jobhead_slurm')
-elif jobconf['platform'] in pbs_platforms:
-    in_jobhead = os.path.join(srcpath,'etc','jobhead_pbs')
+job = setup_job(jobconf)
+in_jobhead = os.path.join(srcpath, 'etc', job.header)
+
+#slurm_platforms = ['s4', 'orion', 'discover']
+#pbs_platforms = ['derecho']
+#if jobconf['platform'] in slurm_platforms:
+#    in_jobhead = os.path.join(srcpath,'etc','jobhead_slurm')
+#elif jobconf['platform'] in pbs_platforms:
+#    in_jobhead = os.path.join(srcpath,'etc','jobhead_pbs')
 
 fullexec = os.path.join(genintconf['build'], 'bin', genintconf['jediexec'])
-wrksbatch = os.path.join(wrkpath,'runscript')
-wrkyaml = os.path.join(wrkpath,'running.yaml')
+wrkjobcard = os.path.join(wrkpath, 'runscript')
+wrkyaml = os.path.join(wrkpath, 'running.yaml')
 
 # Setup METplus related variables
 in_statanalysis_conf = os.path.join(srcpath,'etc',metconf['met_conf_temp'])
@@ -131,25 +136,27 @@ for cdate in dates:
             yaml.dump(conf_temp,f) 
 
         # Update jobcard
-        with open(in_jobhead, 'r') as file:
-            content = file.read()
-        new_content = content.replace('%ACCOUNT%',jobconf['account'])
-        new_content = new_content.replace('%JOBNAME%',jobconf['jobname'])
-        new_content = new_content.replace('%PARTITION%',jobconf['partition'])
-        new_content = new_content.replace('%WALLTIME%',jobconf['walltime'])
-        new_content = new_content.replace('%QOS%',jobconf['qos'])
-        new_content = new_content.replace('%N_NODE%',str(jobconf['n_node']))
-        new_content = new_content.replace('%N_TASK%',str(jobconf['n_task']))
-        new_content = new_content.replace('%LOGFILE%',logfile)
-        with open(wrkjobcard,'w') as file:
-            file.write(new_content)
+        #with open(in_jobhead, 'r') as file:
+        #    content = file.read()
+        #new_content = content.replace('%ACCOUNT%',jobconf['account'])
+        #new_content = new_content.replace('%JOBNAME%',jobconf['jobname'])
+        #new_content = new_content.replace('%PARTITION%',jobconf['partition'])
+        #new_content = new_content.replace('%WALLTIME%',jobconf['walltime'])
+        #new_content = new_content.replace('%QOS%',jobconf['qos'])
+        #new_content = new_content.replace('%N_NODE%',str(jobconf['n_node']))
+        #new_content = new_content.replace('%N_TASK%',str(jobconf['n_task']))
+        #new_content = new_content.replace('%LOGFILE%',logfile)
+        #with open(wrkjobcard,'w') as file:
+        #    file.write(new_content)
+        job.create_job(in_jobhdr=in_jobhead, jobcard=wrkjobcard, logfile=logfile)
 
-        execcmd = setup_cmd(jobconf)
-        cmd_str = execcmd+' '+fullexec+' '+wrkyaml #+' 2> stderr.$$.log 1> stdout.$$.log'
+        # execcmd = setup_cmd(jobconf)
+        cmd_str = job.execcmd+' '+fullexec+' '+wrkyaml #+' 2> stderr.$$.log 1> stdout.$$.log'
         with open(wrkjobcard,'a') as f:
             f.write(cmd_str)
+        sys.exit()
     
-        output = run_job(wrkjobcard)
+        output = job.submit(wrkjobcard)
         jobid = output.split()[-1]
         status = 0
         while status == 0:

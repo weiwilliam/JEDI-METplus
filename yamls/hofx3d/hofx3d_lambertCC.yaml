@@ -4,7 +4,6 @@ time window:
 geometry:
   function space: StructuredColumns
   partitioner: "checkerboard"
-  # units: "meters"
   grid:
     type : "regional"
     nx : 222
@@ -12,7 +11,6 @@ geometry:
     dx : 4000.0
     dy : 4000.0
     lonlat(centre) : [-75.1618,42.90771]
-    #lonlat(xmin,ymin): [-81.634705,38.214104]
     projection :
         type : "lambert_conformal_conic"
         longitude0 : -97.0
@@ -22,15 +20,20 @@ geometry:
         radius: 6370000
 
   groups:
-  - map jedi names:
-      no2: volume_mixing_ratio_of_no2
-      co: volume_mixing_ratio_of_co
-    vertical coordinate: akbk
-    # need to satisfy P = ak + Ps*bk
-    # e.g. from WRF
-    # ak = C4F + Pt - C3F*Pt
-    # bk = C3F
-    ak: [0.000e+00, 5.000e-02, 2.000e-01, 4.000e-01, 7.500e-01,
+  - variables:
+    - volume_mixing_ratio_of_no2
+    - volume_mixing_ratio_of_co
+    levels: 42
+  - variables:
+    - air_pressure_levels
+    levels: 43
+  - variables:
+    - surface_pressure
+    levels: 1
+  model data:
+    air_pressure_at_top_of_atmosphere_model: 50
+    sigma_pressure_hybrid_coordinate_a_coefficient: [
+         0.000e+00, 5.000e-02, 2.000e-01, 4.000e-01, 7.500e-01,
          1.250e+00, 1.850e+00, 2.550e+00, 3.400e+00, 4.350e+00,
          5.450e+00, 6.800e+00, 7.850e+00, 8.800e+00, 9.600e+00,
          1.035e+01, 1.085e+01, 1.135e+01, 1.210e+01, 1.305e+01,
@@ -39,7 +42,8 @@ geometry:
          3.690e+01, 3.755e+01, 3.810e+01, 3.860e+01, 3.920e+01,
          4.000e+01, 4.110e+01, 4.240e+01, 4.395e+01, 4.550e+01,
          4.705e+01, 4.860e+01, 5.000e+01]
-    bk: [1.000, 0.999, 0.996, 0.992, 0.985,
+    sigma_pressure_hybrid_coordinate_b_coefficient: [
+         1.000, 0.999, 0.996, 0.992, 0.985,
          0.975, 0.963, 0.949, 0.932, 0.913,
          0.891, 0.864, 0.843, 0.824, 0.808,
          0.793, 0.783, 0.773, 0.758, 0.739,
@@ -48,21 +52,17 @@ geometry:
          0.262, 0.249, 0.238, 0.228, 0.216,
          0.200, 0.178, 0.152, 0.121, 0.090,
          0.059, 0.028, 0.0]
-
-    levels: 42
-    top pressure: 50
-  - map jedi names:
-      air_pressure_levels: air_pressure_levels
-    levels: 43
-  - map jedi names:
-      PSFC: surface_pressure
-    levels: 1
-
+    nLevels: 42
+  alias:
+  - in code: volume_mixing_ratio_of_no2
+    in file: no2
+  - in code: volume_mixing_ratio_of_co
+    in file: co
 state:
   state variables:
-  - no2
-  - co
-  - PSFC
+  - volume_mixing_ratio_of_no2
+  - volume_mixing_ratio_of_co
+  - surface pressure
   filepath: define_every_cycle
   netcdf extension: nc
   date: define_every_cycle
@@ -90,15 +90,15 @@ observations:
       stretchVertices: topbottom #options: top, bottom, topbottom, none
     obs error:
       covariance model: diagonal
-    obs filters:
-      - filter: Domain Check
-        where:
-        - variable: 
-            name: MetaData/latitude
-          minvalue: 41.
-          maxvalue: 45.
-        - variable: 
-            name: MetaData/longitude
-          minvalue: -80.
-          maxvalue: -73.
+    #obs filters:
+    #  - filter: Domain Check
+    #    where:
+    #    - variable: 
+    #        name: MetaData/latitude
+    #      minvalue: 41.
+    #      maxvalue: 45.
+    #    - variable: 
+    #        name: MetaData/longitude
+    #      minvalue: -80.
+    #      maxvalue: -73.
         

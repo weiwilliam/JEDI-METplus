@@ -4,7 +4,7 @@ time:
   dateint: 24
 genint:
   build: /data/users/swei/Git/JEDI/genint-bundle/build 
-  jediexec: genint_hofx3d.x
+  jediexec: quenchxx_hofx3d.x
   jediyaml: hofx3d_lambertCC.yaml
   obsname: tropomino2
   bkgname: wrfchem
@@ -24,10 +24,11 @@ metplus:
   ioda2metmpr: ioda2metplusmpr.py 
 jobconf:
   platform: s4
-  jobname: genint_wrfchem
+  jobname: qxxgenint_wrfchem
   n_node: 1
   n_task: 1
   account: star
   partition: s4
+  walltime: 0:30:00
   qos: normal
   check_freq: 10

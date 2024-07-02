@@ -17,6 +17,7 @@ module load stack-python/3.10.13
 module load jedi-fv3-env
 module load ewok-env
 module load soca-env
+module load sp
 module load metplus
 
 # See README.md

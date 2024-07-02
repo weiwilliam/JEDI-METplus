@@ -4,6 +4,7 @@ import subprocess
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+from shutil import which
 
 def run_job(script):
     stdout = subprocess.check_output(["sbatch", script]).decode('utf-8')
@@ -66,3 +67,67 @@ def setup_cmd(conf):
         raise Exception('Not supported platform')
 
     return execcmd
+
+class setup_job(object):
+
+    def __init__(self, conf):
+        self.platform = conf['platform']
+        self.jobname = conf['jobname']
+        self.n_node = conf['n_node']
+        self.n_task = conf['n_task']
+        self.walltime = conf['walltime']
+        self.account = conf['account']
+        self.partition = conf['partition']
+        self.qos = conf['qos']
+        self.check_freq = conf['check_freq']
+        self._setcmds()
+
+    def _setcmds(self):
+        slurm_list = ['s4', 'orion', 'discover']
+        pbs_list = ['derecho']
+        if self.platform in slurm_list:
+            self.submit_cmd = which('sbatch')
+            self.search_cmd = which('squeue') + '-j'
+            self.header = 'jobhead_slurm'
+        elif self.platform in pbs_list:
+            self.submit_cmd = which('qsub')
+            self.search_cmd = which('qstat') + '-w'
+            self.header = 'jobhead_pbs'
+        else:
+           raise Exception(f'Platform {self.platform} not supported')
+        
+        if self.platform == 's4':
+            self.execcmd = which('mpiexec')+' -n %s' % (self.n_task)
+        elif self.platform in ['orion', 'discover']:
+            self.execcmd = which('mpirun')
+        elif self.platform == 'derecho':
+            self.execcmd = which('mpiexec')+' -n %s -ppn %s' % (self.n_node,str(self.n_task / self.n_node))
+     
+    def create_job(self, **args):
+        with open(args['in_jobhdr'], 'r') as file:
+            content = file.read()
+        new_content = content.replace('%ACCOUNT%', self.account)
+        new_content = new_content.replace('%JOBNAME%', self.jobname)
+        new_content = new_content.replace('%PARTITION%', self.partition)
+        new_content = new_content.replace('%WALLTIME%', self.walltime)
+        new_content = new_content.replace('%QOS%', self.qos)
+        new_content = new_content.replace('%N_NODE%', str(self.n_node))
+        new_content = new_content.replace('%N_TASK%', str(self.n_task))
+        new_content = new_content.replace('%LOGFILE%', args['logfile'])
+        with open(args['jobcard'], 'w') as file:
+            file.write(new_content)
+    
+    def submit(script):
+        stdout = subprocess.check_output([self.submit_cmd, script]).decode('utf-8')
+        print(stdout, flush=1)
+        return stdout
+
+    def check(jobid):
+        stdout = subprocess.check_output([self.search_cmd, jobid]).decode('utf-8')
+        if jobid in stdout:
+            status = 0
+            print(stdout,flush=1)
+        else:
+            status = 1
+            print('JOB ID: '+jobid+' Finished',flush=1)
+        return status

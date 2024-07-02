@@ -2,11 +2,11 @@
 #PBS -N %JOBNAME%
 #PBS -A %ACCOUNT%
 #PBS -q main
-#PBS -l job_priority=<%QOS%>
+#PBS -l job_priority=%QOS%
 #PBS -l select=%N_NODE%:mpiprocs=%N_TASK%
 #PBS -l walltime=%WALLTIME%
 #PBS -j oe
-#PBS -o ./%JOBNAME%.out
+#PBS -o %LOGFILE%
 
 export HDF5_USE_FILE_LOCKING=FALSE
 ulimit -s unlimited || true
