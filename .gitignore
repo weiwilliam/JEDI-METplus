@@ -1,2 +1,4 @@
-/workdir/*
-/output/*
+workdir/*
+output/*
+logs/*
+venv/*
