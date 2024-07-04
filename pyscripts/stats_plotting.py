@@ -70,7 +70,7 @@ for cdate in wrk_dates:
 outdf = outdf.set_index('datetime')
 for stat in ['COUNT','BIAS','RMSE']:
     if stat=='BIAS':
-        stat_df = outdf['FOBAR']
+        stat_df = outdf['FBAR'] - outdf['OBAR']
     elif stat=='RMSE':
         stat_df = np.sqrt(outdf['FFBAR'] + outdf['OOBAR'] - 2*outdf['FOBAR'])
     elif stat=='COUNT':

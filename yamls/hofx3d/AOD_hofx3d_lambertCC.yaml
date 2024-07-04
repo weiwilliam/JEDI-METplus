@@ -19,6 +19,7 @@ geometry:
         latitude1  : 30.0
         latitude2  : 60.0
         radius: 6370000
+  levels are top down: false
 
   groups:
   - variables:
@@ -46,6 +47,7 @@ geometry:
     - dlsvpdT
     - qsat
     - svp
+    - aerosol_optical_depth_at_550
     levels: 42
   - variables:
     - air_pressure_levels
@@ -54,7 +56,7 @@ geometry:
     - surface_pressure
     levels: 1
   model data:
-    base_air_potential_temperature: 290
+    base_air_potential_temperature: 300
     air_pressure_at_top_of_atmosphere_model: 50
     sigma_pressure_hybrid_coordinate_a_coefficient: [
          0.000e+00, 5.000e-02, 2.000e-01, 4.000e-01, 7.500e-01,
@@ -162,6 +164,8 @@ observations:
     obs error:
       covariance model: diagonal
     #obs filters:
+    #  - filter: GOMsaver
+    #    filename: define_every_cycle
     #  - filter: Domain Check
     #    where:
     #    - variable:

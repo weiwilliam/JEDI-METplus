@@ -5,11 +5,12 @@ import xarray as xr
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
-
 from functions import set_size
 
 # Plotting control
 axe_w = 4; axe_h = 4; plot_quality = 300
+# Level control
+vmin = 0; vmax = 5
 # Colorbar control
 cb_ori = 'vertical'
 cb_frac = 0.025
@@ -19,7 +20,7 @@ cb_asp = 32
 minlat = 40.2; maxlat = 45.;
 minlon = -80.; maxlon = -71.5;
 
-plot_date = 2024012118
+plot_date = 2024012318
 plot_product = 'v.viirs-m_npp_wrfchem' # 'tropomi_no2_total'
 unit_str = ' ' #'mol m$^{-2}$'
 hofx_file = 'hofx_wxaq-VIIRS_NPP_%s.nc' %(plot_date)
@@ -35,10 +36,10 @@ plot_var = pltvar_mapdict[plot_product]
 
 srcpath = os.path.join(os.path.dirname(__file__),'..')
 hofx_path = os.path.join(srcpath,'output',plot_product,'hofx')
-plts_path = os.path.join(srcpath,'output','plots','2dmap')
+plts_path = os.path.join(srcpath,'output',plot_product,'plots','2dmap')
 
 if not os.path.exists(hofx_path):
-    raise Exception('HofX of '+plot_product+' is not available')
+    raise Exception(f'HofX of {plot_product} is not available')
 
 if not os.path.exists(plts_path):
     os.makedirs(plts_path)
@@ -76,7 +77,8 @@ for plot_type in ['ObsValue','HofX']:
     gl.top_labels=False
     gl.xformatter=LongitudeFormatter(degree_symbol=u'\u00B0 ')
     gl.yformatter=LatitudeFormatter(degree_symbol=u'\u00B0 ')
-    sc = ax.scatter(lons,lats,c=pltdata,s=2,transform=ccrs.PlateCarree())
+    sc = ax.scatter(lons, lats, c=pltdata, s=1.6, vmin=vmin, vmax=vmax, 
+                    transform=ccrs.PlateCarree())
     
     title_str = '%s at %s' %(plot_type,plot_date)
     cb_str = '%s (%s)' %(plot_var,unit_str)

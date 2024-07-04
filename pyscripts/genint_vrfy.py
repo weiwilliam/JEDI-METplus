@@ -39,6 +39,7 @@ inpath = os.path.join(datapath, 'input')
 outpath = os.path.join(dataconf['output'], casename)
 statsout_path = os.path.join(outpath, 'stats')
 hofxout_path = os.path.join(outpath, 'hofx')
+gvalout_path = os.path.join(outpath, 'geovals')
 
 logpath = os.path.join(srcpath, 'logs', casename)
 
@@ -46,7 +47,9 @@ os.environ['runworkdir'] = wrkpath
 os.environ['runmetplusdir'] = metplus_runpath
 
 pathlist = [wrkpath, logpath, datapath, inpath, outpath,
-            metplus_runpath, statsout_path, hofxout_path]
+            metplus_runpath, statsout_path, hofxout_path,
+            gvalout_path,
+            ]
 
 if os.path.exists(wrkpath):
     shutil.rmtree(wrkpath)
@@ -118,7 +121,10 @@ for cdate in dates:
         # Update time window and dump to working yaml
         conf_temp['time window']['begin'] = w_beg_str
         conf_temp['state']['date'] = cdate_str3
-        bkg_file = cdate.strftime(dataconf['bkg_template'])
+        if '{init_date}' in dataconf['bkg_template']:
+            bkg_file = cdate.strftime(dataconf['bkg_template'].format(init_date=init_dstr))
+        else:
+            bkg_file = cdate.strftime(dataconf['bkg_template'])
         conf_temp['state']['filepath'] = os.path.join('Data/input/bkg/',bkg_file)
 
         for subobs_conf in conf_temp['observations']['observers']:
@@ -131,6 +137,7 @@ for cdate in dates:
                 subobs_conf['obs space']['simulated variables'] = [genintconf['simulated_varname']]
                 subobs_conf['obs operator']['nlayers_retrieval'] = ret_nlev
                 subobs_conf['obs operator']['tracer variables'] = [genintconf['tracer_name']]
+        #if 'GOMSaver' in subobs_conf['obs filter'][]
 
         with open(wrkyaml,'w') as f:
             yaml.dump(conf_temp,f) 
@@ -154,13 +161,12 @@ for cdate in dates:
         cmd_str = job.execcmd+' '+fullexec+' '+wrkyaml #+' 2> stderr.$$.log 1> stdout.$$.log'
         with open(wrkjobcard,'a') as f:
             f.write(cmd_str)
-        sys.exit()
     
         output = job.submit(wrkjobcard)
         jobid = output.split()[-1]
         status = 0
         while status == 0:
-            status = check_job(jobid)
+            status = job.check(jobid)
             if status == 0: time.sleep(jobconf['check_freq'])
 
         # Check the outputs

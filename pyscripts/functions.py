@@ -87,11 +87,13 @@ class setup_job(object):
         pbs_list = ['derecho']
         if self.platform in slurm_list:
             self.submit_cmd = which('sbatch')
-            self.search_cmd = which('squeue') + '-j'
+            self.search_cmd = which('squeue')
+            self.search_arg = '-j'
             self.header = 'jobhead_slurm'
         elif self.platform in pbs_list:
             self.submit_cmd = which('qsub')
-            self.search_cmd = which('qstat') + '-w'
+            self.search_cmd = which('qstat')
+            self.search_arg = '-w'
             self.header = 'jobhead_pbs'
         else:
            raise Exception(f'Platform {self.platform} not supported')
@@ -117,13 +119,13 @@ class setup_job(object):
         with open(args['jobcard'], 'w') as file:
             file.write(new_content)
     
-    def submit(script):
+    def submit(self, script):
         stdout = subprocess.check_output([self.submit_cmd, script]).decode('utf-8')
         print(stdout, flush=1)
         return stdout
 
-    def check(jobid):
-        stdout = subprocess.check_output([self.search_cmd, jobid]).decode('utf-8')
+    def check(self, jobid):
+        stdout = subprocess.check_output([self.search_cmd, self.search_arg, jobid]).decode('utf-8')
         if jobid in stdout:
             status = 0
             print(stdout,flush=1)
