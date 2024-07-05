@@ -10,7 +10,7 @@ from functions import set_size
 # Plotting control
 axe_w = 4; axe_h = 4; plot_quality = 300
 # Level control
-vmin = 0; vmax = 5
+vmin = 0; vmax = 1
 # Colorbar control
 cb_ori = 'vertical'
 cb_frac = 0.025
@@ -20,7 +20,7 @@ cb_asp = 32
 minlat = 40.2; maxlat = 45.;
 minlon = -80.; maxlon = -71.5;
 
-plot_date = 2024012318
+plot_date = 2024012118
 plot_product = 'v.viirs-m_npp_wrfchem' # 'tropomi_no2_total'
 unit_str = ' ' #'mol m$^{-2}$'
 hofx_file = 'hofx_wxaq-VIIRS_NPP_%s.nc' %(plot_date)
@@ -77,7 +77,7 @@ for plot_type in ['ObsValue','HofX']:
     gl.top_labels=False
     gl.xformatter=LongitudeFormatter(degree_symbol=u'\u00B0 ')
     gl.yformatter=LatitudeFormatter(degree_symbol=u'\u00B0 ')
-    sc = ax.scatter(lons, lats, c=pltdata, s=1.6, vmin=vmin, vmax=vmax, 
+    sc = ax.scatter(lons, lats, c=pltdata, s=0.8, vmin=vmin, vmax=vmax, 
                     transform=ccrs.PlateCarree())
     
     title_str = '%s at %s' %(plot_type,plot_date)

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys
 import argparse
 from datetime import datetime
 import netCDF4 as nc
@@ -51,76 +52,49 @@ obsErrName = iconv.OerrName()
 qcName = iconv.OqcName()
 
 class cropioda(object):
-    def __init__(self, filename, varname, polygon):
-        self.file = filename
-        self.var = varname
-        self.polyfile = polygon
-        self.varDict = defaultdict(lambda: defaultdict(dict))
-        self.outdata = defaultdict(lambda: DefaultOrderedDict(OrderedDict))
-        self.varAttrs = DefaultOrderedDict(lambda: DefaultOrderedDict(dict))
-        self._read()
+    def __init__(self, input, output, polygon):
+        src = nc.Dataset(input, 'r')
+        dst = nc.Dataset(output, 'w')
 
-    def _read(self):
-
-        iodavar = self.var
-        self.varDict[iodavar]['valKey'] = iodavar, obsValName
-        self.varDict[iodavar]['errKey'] = iodavar, obsErrName
-        self.varDict[iodavar]['qcKey'] = iodavar, qcName
-
-        ncd = nc.Dataset(self.file, 'r')
-
-        for attr in ncd.ncattrs():
-            if 'ioda' in attr:
-                continue
-            AttrData[attr] = getattr(ncd, attr)
-
-        VarDims[iodavar] = list(ncd.groups['ObsValue'].variables[iodavar].dimensions)
-
-        lat = ncd.groups[metaDataName].variables['latitude'][:].ravel()
-        lon = ncd.groups[metaDataName].variables['longitude'][:].ravel()
-        dt = ncd.groups[metaDataName].variables['dateTime'][:].ravel()
+        lat = src.groups['MetaData'].variables['latitude'][:].ravel()
+        lon = src.groups['MetaData'].variables['longitude'][:].ravel()
        
-        mask = isinside(lat, lon, self.polyfile)
-        #mask = ((lat > self.minlat) & (lat < self.maxlat) &
-        #        (lon > self.minlon) & (lon < self.maxlon))
+        mask = isinside(lat, lon, polygon)
 
-        if np.count_nonzero(mask)==0:
+        if np.count_nonzero(mask) == 0:
             raise Exception('no obs available in the target area')
+        else:
+            print(f'{np.count_nonzero(mask)} obs in the target area')
 
-        out_lats = lat[mask]
-        out_lons = lon[mask]
-        out_dts = dt[mask]
+        dst.setncatts(src.__dict__)
 
-        for grp in ncd.groups.keys():
-            if grp==metaDataName:
-                continue
-            print('Process group %s' % (grp))
-            vars = ncd.groups[grp].variables[iodavar]
-            for attr in vars.ncattrs():
-                print('   Process attr %s = %s' %(attr, getattr(vars, attr)) ) 
-                self.varAttrs[iodavar, grp][attr] = getattr(vars, attr)
- 
-        self.outdata[('latitude', metaDataName)] = np.array(out_lats, dtype=np.float32)
-        self.outdata[('longitude', metaDataName)] = np.array(out_lons, dtype=np.float32)
-        self.outdata[('dateTime', metaDataName)] = np.array(out_dts, dtype=np.int64)
-        dt_units = getattr(ncd.groups[metaDataName].variables['dateTime'], 'units')
-        self.varAttrs[('dateTime', metaDataName)]['units'] = dt_units
+        for name, dimension in src.dimensions.items():
+            if name == 'Location':  
+                dst.createDimension(name, np.count_nonzero(mask))
+            else:
+                dst.createDimension(name, len(dimension) if not dimension.isunlimited() else None)
 
-        obs = ncd.groups[obsValName].variables[iodavar][:].data
-        err = ncd.groups[obsErrName].variables[iodavar][:].data
-        qc = ncd.groups[qcName].variables[iodavar][:].data
+        for name, variable in src.variables.items():
+            # Define the variable in the new file
+            dst_var = dst.createVariable(name, variable.datatype, variable.dimensions)
 
-        out_obs = obs[mask, :]
-        out_err = err[mask, :]
-        out_qc = qc[mask, :]
+            # Copy variable attributes
+            dst_var.setncatts(variable.__dict__)
 
-        self.outdata[self.varDict[iodavar]['valKey']] = np.array(out_obs.ravel(), dtype=np.float32)
-        self.outdata[self.varDict[iodavar]['errKey']] = np.array(out_err.ravel(), dtype=np.float32)
-        self.outdata[self.varDict[iodavar]['qcKey']] = np.array(out_qc.ravel(), dtype=np.int32)
-
-        DimDict['Location'] = len(self.outdata[('latitude', metaDataName)])
-        DimDict['Channel'] = ncd.variables['Channel'][:].data
-
+        for grp, group in src.groups.items():
+            dst_grp = dst.createGroup(grp)
+            for var, variable in src.groups[grp].variables.items():
+                print(f'Processing {grp} / {var}')
+                dst_var = dst_grp.createVariable(var, variable.datatype, variable.dimensions)
+                dst_var.setncatts(variable.__dict__)
+                if 'Location' in variable.dimensions:
+                    indices = [slice(None)] * variable.ndim
+                    dim_index = variable.dimensions.index('Location')  # Change 'time' to your desired dimension
+                    indices[dim_index] = mask
+                    dst_var[:] = variable[tuple(indices)]
+                else:
+                    dst_var[:] = variable[:]
+                
 def main():
 
     parser = argparse.ArgumentParser(
@@ -135,10 +109,6 @@ def main():
         help="name of output ioda file",
         type=str, required=True)
     parser.add_argument(
-        '-v', '--variable',
-        help="variable name to process",
-        type=str, required=True)
-    parser.add_argument(
         '-p', '--polygon',
         help="masking polygon file",
         type=str, required=True)
@@ -146,7 +116,9 @@ def main():
     args = parser.parse_args()
 
     # Read in the AOD data
-    cropped = cropioda(args.input, args.variable, args.polygon)
+    cropped = cropioda(args.input, args.output, args.polygon)
+
+    sys.exit()
 
     # write everything out
     writer = iconv.IodaWriter(args.output, locationKeyList, DimDict)
