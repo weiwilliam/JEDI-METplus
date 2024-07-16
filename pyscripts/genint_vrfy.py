@@ -61,6 +61,10 @@ for dir in pathlist:
         shutil.rmtree(dir)
         os.makedirs(dir)
 
+for fhr in metconf['verify_fhours']:
+    subfhr_hofx = os.path.join(hofxout_path, 'f%.3i'%(fhr))
+    os.makedirs(subfhr_hofx)
+
 os.chdir(wrkpath)
 
 # Create symbolic links of needed input folders and the output directory
@@ -73,13 +77,6 @@ dates = get_dates(timeconf['sdate'], timeconf['edate'], timeconf['dateint'])
 
 job = setup_job(jobconf)
 in_jobhead = os.path.join(srcpath, 'etc', job.header)
-
-#slurm_platforms = ['s4', 'orion', 'discover']
-#pbs_platforms = ['derecho']
-#if jobconf['platform'] in slurm_platforms:
-#    in_jobhead = os.path.join(srcpath,'etc','jobhead_slurm')
-#elif jobconf['platform'] in pbs_platforms:
-#    in_jobhead = os.path.join(srcpath,'etc','jobhead_pbs')
 
 fullexec = os.path.join(genintconf['build'], 'bin', genintconf['jediexec'])
 wrkjobcard = os.path.join(wrkpath, 'runscript')
@@ -97,7 +94,11 @@ for cdate in dates:
     w_beg_str = (cdate - wlnth/2).strftime('%Y-%m-%dT%H:%M:%SZ')
 
     obsinfile = os.path.join('Data/input/obs',cdate.strftime(dataconf['obs_template']))
-    obsoutfile = os.path.join('Data/output/hofx','hofx_%s' %(cdate.strftime(dataconf['obs_template'])))
+    if not os.path.exists(obsinfile):
+        print(f'{obsinfile} not available')
+        print('')
+        continue
+
     ds = xr.open_dataset(obsinfile)
     if ds.Location.size==0:
         print('No observation available at %s' %(cdate_str1))
@@ -127,6 +128,7 @@ for cdate in dates:
             bkg_file = cdate.strftime(dataconf['bkg_template'])
         conf_temp['state']['filepath'] = os.path.join('Data/input/bkg/',bkg_file)
 
+        obsoutfile = os.path.join('Data/output/hofx','f%.3i' %(fhr), 'hofx_%s' %(cdate.strftime(dataconf['obs_template'])))
         for subobs_conf in conf_temp['observations']['observers']:
             subobs_conf['obs space']['name'] = genintconf['simulated_varname']
             subobs_conf['obs space']['obsdatain']['engine']['obsfile'] = obsinfile
@@ -143,18 +145,6 @@ for cdate in dates:
             yaml.dump(conf_temp,f) 
 
         # Update jobcard
-        #with open(in_jobhead, 'r') as file:
-        #    content = file.read()
-        #new_content = content.replace('%ACCOUNT%',jobconf['account'])
-        #new_content = new_content.replace('%JOBNAME%',jobconf['jobname'])
-        #new_content = new_content.replace('%PARTITION%',jobconf['partition'])
-        #new_content = new_content.replace('%WALLTIME%',jobconf['walltime'])
-        #new_content = new_content.replace('%QOS%',jobconf['qos'])
-        #new_content = new_content.replace('%N_NODE%',str(jobconf['n_node']))
-        #new_content = new_content.replace('%N_TASK%',str(jobconf['n_task']))
-        #new_content = new_content.replace('%LOGFILE%',logfile)
-        #with open(wrkjobcard,'w') as file:
-        #    file.write(new_content)
         job.create_job(in_jobhdr=in_jobhead, jobcard=wrkjobcard, logfile=logfile)
 
         # execcmd = setup_cmd(jobconf)
@@ -184,6 +174,8 @@ for cdate in dates:
         mp_confs = mp_confs.replace('@PARM_BASE@', os.environ['metplus_ROOT'])
         mp_confs = mp_confs.replace('@valid_begin@', cdate_str1)
         mp_confs = mp_confs.replace('@valid_end@', cdate_str1)
+        mp_confs = mp_confs.replace('@leadtime@', str(fhr))
+        mp_confs = mp_confs.replace('@fhrstatsdir@', 'f%.3i'%(fhr))
         mp_confs = mp_confs.replace('@embedded_py@', embedded_py)
         mp_confs = mp_confs.replace('@embedded_input@', py_input)
         #mp_confs = mp_confs.replace('@OBSTYPE@',obs_type)
@@ -196,7 +188,11 @@ for cdate in dates:
         post_run_cleanup(metplus_conf, 'METplus', total_errors)
 
         # Collect the stats and plots
-        stat_file = os.path.join(wrkpath, 'Data/output/stats', cdate_str1+'.out')
+        stat_file = os.path.join(wrkpath, 'Data/output/stats', 'f%.3i'%(fhr), cdate_str1+'.out')
         if not os.path.exists(stat_file):
-            print(stat_file+' does not exist')
-            continue
+            tmp_all_out = os.path.join(wrkpath, 'Data/output/stats', 'f%.3i'%(fhr), 'ALL.out')
+            if os.path.exists(tmp_all_out):
+                os.rename(tmp_all_out, stat_file)
+            else:
+                print(stat_file+' does not exist')
+                continue

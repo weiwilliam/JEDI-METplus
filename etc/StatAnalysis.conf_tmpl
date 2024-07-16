@@ -11,7 +11,8 @@ VALID_TIME_FMT = %Y%m%d%H
 VALID_BEG=@valid_begin@
 VALID_END=@valid_end@
 VALID_INCREMENT = 1D
-LEAD_SEQ = 24
+LEAD_SEQ = @leadtime@
+LOG_LEVEL = DEBUG
 
 #USER_SCRIPT_RUNTIME_FREQ = RUN_ONCE_FOR_EACH
 
@@ -21,7 +22,7 @@ LEAD_SEQ = 24
 ###
 
 STAT_ANALYSIS_OUTPUT_DIR = {OUTPUT_BASE}/../Data/output/stats
-STAT_ANALYSIS_OUTPUT_TEMPLATE = {valid?fmt=%Y%m%d%H}.out
+STAT_ANALYSIS_OUTPUT_TEMPLATE = @fhrstatsdir@/{valid?fmt=%Y%m%d%H}.out
 
 ###
 # StatAnalysis Settings
@@ -43,7 +44,7 @@ STAT_ANALYSIS_JOB1 = -job aggregate_stat -dump_row [dump_row_file] -line_type MP
 
 MODEL_LIST = 
 DESC_LIST =
-FCST_LEAD_LIST =
+FCST_LEAD_LIST = {LEAD_SEQ}
 OBS_LEAD_LIST =
 FCST_VALID_HOUR_LIST =
 FCST_INIT_HOUR_LIST =
@@ -67,4 +68,4 @@ ALPHA_LIST =
 LINE_TYPE_LIST =
 
 GROUP_LIST_ITEMS = 
-LOOP_LIST_ITEMS = MODEL_LIST
+LOOP_LIST_ITEMS = FCST_LEAD_LIST

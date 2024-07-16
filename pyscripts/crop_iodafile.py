@@ -36,21 +36,6 @@ def isinside(lat_arr, lon_arr, poly_file):
 
     return out_mask
 
-locationKeyList = [
-    ("latitude", "float"),
-    ("longitude", "float"),
-    ("dateTime", "long")
-]
-
-AttrData = {}
-VarDims = {}
-DimDict = {}
-
-metaDataName = iconv.MetaDataName()
-obsValName = iconv.OvalName()
-obsErrName = iconv.OerrName()
-qcName = iconv.OqcName()
-
 class cropioda(object):
     def __init__(self, input, output, polygon):
         src = nc.Dataset(input, 'r')
@@ -117,12 +102,6 @@ def main():
 
     # Read in the AOD data
     cropped = cropioda(args.input, args.output, args.polygon)
-
-    sys.exit()
-
-    # write everything out
-    writer = iconv.IodaWriter(args.output, locationKeyList, DimDict)
-    writer.BuildIoda(cropped.outdata, VarDims, cropped.varAttrs, AttrData)
 
 if __name__ == '__main__':
     main()    

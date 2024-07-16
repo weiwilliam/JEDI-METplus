@@ -11,16 +11,17 @@ plot_quality = 300
 axe_w = 7
 axe_h = 3
 
-sdate = 2024011718
-edate = 2024012318
-vrfy_freq = 24
-vrfy_product = 'v.viirs-m_npp_wrfchem' # 'tropomi_no2_tropo'
+sdate = 2024060100
+edate = 2024063018
+vrfy_fhr = 6
+vrfy_freq = 6
+vrfy_product = 'TEMPO_no2_tropo_wrfchem' # 'tropomi_no2_tropo'
 vrfy_stat = 'SL1L2'
-unit_str = '' # 'mol m$^{-2}$'
+unit_str = 'mol m$^{-2}$'
 
 srcpath = os.path.join(os.path.dirname(__file__),'..')
-stats_path = os.path.join(srcpath,'output',vrfy_product,'stats')
-plts_path = os.path.join(srcpath,'output',vrfy_product,'plots')
+stats_path = os.path.join(srcpath, 'output', vrfy_product, 'stats', 'f%.3i'%(vrfy_fhr))
+plts_path = os.path.join(srcpath, 'output', vrfy_product, 'plots', 'f%.3i'%(vrfy_fhr))
 
 if not os.path.exists(stats_path):
     raise Exception('Stats of '+vrfy_product+' is not available')
@@ -38,8 +39,11 @@ col = None
 stats_dict = {}
 i = 0
 for cdate in wrk_dates:
-    stats_file = os.path.join(stats_path,cdate.strftime('%Y%m%d%H.out'))
+
+    cdatefile = cdate.strftime('%Y%m%d%H.out')
+    stats_file = os.path.join(stats_path, cdatefile)
     if not os.path.exists(stats_file):
+        print(f'WARNING: Skip {cdatefile}, {stats_file} is not available')
         continue
 
     f = open(stats_file,'r')
@@ -78,15 +82,28 @@ for stat in ['COUNT','BIAS','RMSE']:
     df[stat] = stat_df
 
 ylbstr = '%s (%s)' %(stats_dict['FCST_VAR'][0],unit_str)
+
+# Plot bias and RMSE
 fig, ax = plt.subplots()
-set_size(axe_w,axe_h,b=0.2,l=0.15,r=0.95,t=0.95)
+set_size(axe_w,axe_h,b=0.25,l=0.1,r=0.95,t=0.95)
 ax.set_ylabel(ylbstr)
-df[['BIAS','RMSE']].plot(ax=ax,marker='*')
+filter = (df['BIAS'].isna() & df['RMSE'].isna())
+df[['BIAS','RMSE']].loc[~filter].plot.line(ax=ax, marker='*')
 ax.grid()
 
-plotname = '%s.png' %(vrfy_product)
-outname = os.path.join(plts_path,plotname)
+plotname = 'BIAS_RMSE_%s.f%.3i.png' %(vrfy_product, vrfy_fhr)
+outname = os.path.join(plts_path, plotname)
 fig.savefig(outname,dpi=plot_quality)
 plt.close()
  
+# Plot HofX and ObsValue
+fig, ax = plt.subplots()
+set_size(axe_w,axe_h,b=0.25,l=0.1,r=0.95,t=0.95)
+ax.set_ylabel(ylbstr)
+outdf[['FBAR','OBAR']].plot.line(ax=ax, marker='*', color={'FBAR':'r', 'OBAR':'k'})
+ax.grid()
 
+plotname = 'F_O_%s.f%.3i.png' %(vrfy_product, vrfy_fhr)
+outname = os.path.join(plts_path, plotname)
+fig.savefig(outname,dpi=plot_quality)
+plt.close()
