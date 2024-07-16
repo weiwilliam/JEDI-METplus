@@ -18,6 +18,7 @@ geometry:
         latitude1  : 30.0
         latitude2  : 60.0
         radius: 6370000
+  levels are top down: false
 
   groups:
   - variables:
@@ -58,11 +59,13 @@ geometry:
     in file: no2
   - in code: volume_mixing_ratio_of_co
     in file: co
+  - in code: surface_pressure
+    in file: PSFC
 state:
   state variables:
   - volume_mixing_ratio_of_no2
   - volume_mixing_ratio_of_co
-  - surface pressure
+  - surface_pressure
   filepath: define_every_cycle
   netcdf extension: nc
   date: define_every_cycle
@@ -80,6 +83,7 @@ observations:
           type: H5File
           obsfile: define_every_cycle
       simulated variables: define_in_mainyaml
+      _source: nasa
     obs operator:
       model units coeff: 1E-6
       name: ColumnRetrieval
