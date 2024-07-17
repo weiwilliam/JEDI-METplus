@@ -46,13 +46,18 @@ for cdate in wrk_dates:
         print(f'WARNING: Skip {cdatefile}, {stats_file} is not available')
         continue
 
+    find_stats = False
     f = open(stats_file,'r')
     for line in f.readlines():
         if 'COL_NAME:' in line and col is None:
             col = line.split()[1:]
         if vrfy_stat in line:
             stats = line.split()[1:]
+            find_stats = True
     f.close()
+    if not find_stats:
+        print(f'WARNING: Skip {cdatefile}, did not find stats: {vrfy_stat}')
+        continue
 
     stats_dict['datetime'] = cdate
     for icol in range(len(col)):

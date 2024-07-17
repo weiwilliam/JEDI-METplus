@@ -1,3 +1,5 @@
+run_jedihofx: True
+run_met_plus: True
 time:
   sdate: 2024011718
   edate: 2024012418

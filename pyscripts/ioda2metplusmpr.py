@@ -81,5 +81,6 @@ if os.path.exists(hofx_file):
         print("Total Length:\t" + repr(len(mpr_data)))
 
 else:
-    print(f"{hofx_file} does not exist")
-    sys.exit(1)
+    mpr_data = []
+    print(f"WARNING: {hofx_file} does not exist")
+    
