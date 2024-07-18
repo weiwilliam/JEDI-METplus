@@ -3,7 +3,7 @@ Workflow to interface JEDI component (generic-interface) and METplus for constit
 
 ## Clone the code
 Clone this repo recusively with the command below
-`git clone https://github.com/weiwilliam/JEDI-METplus.git [folder]`
+`git clone https://github.com/weiwilliam/JEDI-METplus.git <folder>`
 
 ## Supported platforms
 * Platforms with JCSDA spack-stack package, now provide derecho_intel module loading script.
@@ -15,7 +15,7 @@ Clone this repo recusively with the command below
 ## Supported (Tested) measurements
 * TropOMI NO2 and CO
 * VIIRS AOD
-* 
+* TEMPO NO2
 
 ## Use of this interface
 * Prerequisites: observation files in IODA format and model outputs in NetCDF (GRIB2 may be supported later).
@@ -25,10 +25,11 @@ Clone this repo recusively with the command below
 3. Execute `pyscripts/genint_vrfy.py <main yaml>`
 
 ## Installation of generic interface
-1. Create the `build/genint` folder
+1. Create the `<repo>/genint-bundle/build` folder
 2. `export GENINT_BUILD=<path/to/build/genint>`
-3. `source modulefiles/setup_<platform>_<compiler>`
-4. `cd <path/to/build/genint>`
-5. `ecbuild <path/to/genint-bundle>`
-6. `make -j<n>`
-7. ``
+3. `source ush/setup.sh <repo path> <platform> <compiler>`
+   * It will create the virtual env `<repo>/venv` first
+5. `cd <path/to/build/genint>`
+6. `ecbuild <path/to/genint-bundle>`
+7. `make -j<n>`
+8. `ctest` to check executables work properly
