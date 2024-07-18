@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 
 pyscript='./crop_iodafile.py'
+polygon='../etc/polygons/wxaq_polygon.csv'
 
-obs_folder='/data/users/swei/Dataset/jedi-data/input/obs'
-target='tempo_no2_tropo-full'
-cropped='tempo_no2_tropo-wxaq'
-polygon='/data/users/swei/Git/JEDI/JEDI-METplus/etc/polygons/wxaq_polygon.csv'
+obs_folder='/glade/derecho/scratch/swei/Dataset/input/obs'
+target='tropomi_no2_tropo'
+cropped='tropomi_no2_tropo-wxaq'
+
+if [ ! -d $obs_folder/$cropped ]; then 
+    mkdir -p $obs_folder/$cropped 
+fi
 
 for file in `ls ${obs_folder}/${target}`
 do

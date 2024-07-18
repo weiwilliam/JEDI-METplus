@@ -5,6 +5,7 @@ compiler=$3
 
 export GENINT_BUILD=$topdir/genint-bundle/build
 modules_setup_script=$topdir/modulefiles/setup_${platform}_${compiler}.sh
+
 if [ -f $modules_setup_script ]; then
     echo "Load modules with $modules_setup_script"
     source $modules_setup_script

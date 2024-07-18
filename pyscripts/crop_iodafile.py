@@ -6,10 +6,6 @@ import netCDF4 as nc
 import numpy as np
 import os
 
-import pyiodaconv.ioda_conv_engines as iconv
-from collections import defaultdict, OrderedDict
-from pyiodaconv.orddicts import DefaultOrderedDict
-
 def isinside(lat_arr, lon_arr, poly_file):
     import numpy as np
     import pandas as pd
@@ -74,7 +70,7 @@ class cropioda(object):
                 dst_var.setncatts(variable.__dict__)
                 if 'Location' in variable.dimensions:
                     indices = [slice(None)] * variable.ndim
-                    dim_index = variable.dimensions.index('Location')  # Change 'time' to your desired dimension
+                    dim_index = variable.dimensions.index('Location')
                     indices[dim_index] = mask
                     dst_var[:] = variable[tuple(indices)]
                 else:
