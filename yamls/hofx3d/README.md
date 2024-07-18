@@ -22,6 +22,7 @@ geometry:
         latitude1  : 30.0
         latitude2  : 60.0
         radius: 6370000
+  levels are top down: false
 
   groups:
   - variables:
@@ -110,6 +111,17 @@ observations:
         EndianType: little_endian
         CoefficientPath: Data/input/crtm/
         AerosolOption: aerosols_gocart_default
+
+    obs operator:
+      name: ColumnRetrieval
+      isApriori: false
+      isAveragingKernel: true
+      model units coeff: 1E-6
+      nlayers_retrieval: 34
+      stretchVertices: topbottom
+      tracer variables:
+      - volume_mixing_ratio_of_no2
+
     obs error:
       covariance model: diagonal
     #obs filters:
@@ -131,7 +143,12 @@ observations:
   * `variables:` need to list all the variables used during whole process
   * `model data:` the additional information (static) to be provided into HofX run
   * `alias:` the variable name mapping between I/O (in_file) and JEDI (in_code)
+* `levels are top down:` false will flip GeoVals to top-down order
 * `state:`
   * `state variables:` list all the variables should be read from background files
 * `obs operator:`
   * `name:` AodCRTM or ColumnRetrieval (trace gas, like NO2 and CO)
+  * For AodCRTM:
+    * `EndianType:` UFO/CRTM will complain if it is not right.
+  * For ColumnRetrieval
+    * `nlayers_retrieval:` adjust it accordingly: 34 for tropomi_no2, 50 for tropomi_co, and 72 for tempo_

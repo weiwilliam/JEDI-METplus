@@ -1,5 +1,7 @@
 ## README for main yaml keys
 ```
+run_jedihofx: True
+run_met_plus: True
 time:
   sdate: 2024011718
   edate: 2024012418
@@ -34,6 +36,8 @@ jobconf:
   qos: normal
   check_freq: 10
 ```
+* `run_jedihofx:` True: run genint hofx 3D 
+* `run_met_plus:` True: run met plus after JEDI hofx 3D finished
 * `time:`
   * `state:` first cycle (10-digit)
   * `edate:` last cycle (10-digit)
