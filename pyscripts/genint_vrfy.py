@@ -93,7 +93,7 @@ if run_jedihofx:
         cdate_str3 = cdate.strftime('%Y-%m-%dT%H:%M:%SZ')
         w_beg_str = (cdate - wlnth/2).strftime('%Y-%m-%dT%H:%M:%SZ')
     
-        obsinfile = os.path.join('Data/input/obs',cdate.strftime(dataconf['obs_template']))
+        obsinfile = os.path.join(datapath,'input/obs',cdate.strftime(dataconf['obs_template']))
         if not os.path.exists(obsinfile):
             print(f'{obsinfile} not available')
             print('')
@@ -126,9 +126,9 @@ if run_jedihofx:
                 bkg_file = cdate.strftime(dataconf['bkg_template'].format(init_date=init_dstr))
             else:
                 bkg_file = cdate.strftime(dataconf['bkg_template'])
-            conf_temp['state']['filepath'] = os.path.join('Data/input/bkg/',bkg_file)
+            conf_temp['state']['filepath'] = os.path.join(datapath,'input/bkg/',bkg_file)
     
-            obsoutfile = os.path.join('Data/output/hofx','f%.2i' %(fhr), 'hofx_%s' %(cdate.strftime(dataconf['obs_template'])))
+            obsoutfile = os.path.join(datapath,'output/hofx','f%.2i' %(fhr), 'hofx_%s' %(cdate.strftime(dataconf['obs_template'])))
             for subobs_conf in conf_temp['observations']['observers']:
                 subobs_conf['obs space']['name'] = genintconf['simulated_varname']
                 subobs_conf['obs space']['obsdatain']['engine']['obsfile'] = obsinfile
@@ -154,6 +154,7 @@ if run_jedihofx:
         
             output = job.submit(wrkjobcard)
             jobid = output.split()[-1]
+            if jobconf['platform']=='derecho': time.sleep(15)
             status = 0
             while status == 0:
                 status = job.check(jobid)

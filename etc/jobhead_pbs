@@ -7,6 +7,7 @@
 #PBS -l walltime=%WALLTIME%
 #PBS -j oe
 #PBS -o %LOGFILE%
+#PBS -V
 
 export HDF5_USE_FILE_LOCKING=FALSE
 ulimit -s unlimited || true
