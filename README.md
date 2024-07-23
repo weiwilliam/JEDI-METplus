@@ -19,10 +19,11 @@ Clone this repo recusively with the command below
 
 ## Use of this interface
 * Prerequisites: observation files in IODA format and model outputs in NetCDF (GRIB2 may be supported later).
-1. Based on your application, copy a main yaml file from yamls/main and a hofx3d yaml file from yamls/hofx3d.
+1. Create Python venv under your repo, `source ush/setup.sh </repo/path> <platform> <compiler>`
+2. Based on your application, copy a main yaml file from yamls/main and a hofx3d yaml file from yamls/hofx3d.
    <e.g., evaluate wrf-chem trace gas, copy `main/main_wrfchem.yaml` and `hofx3d/hofx3d_lambertCC.yaml`>
-2. Update the main and hofx3d yaml files as needed. Check README.md under `yamls/<main/hofx3d>` for details.
-3. Execute `pyscripts/genint_vrfy.py <main yaml>`
+3. Update the main and hofx3d yaml files as needed. Check README.md under `yamls/<main/hofx3d>` for details.
+4. Execute `pyscripts/genint_vrfy.py <main yaml>`
 
 ## Installation of generic interface
 1. Create the `<repo>/genint-bundle/build` folder
