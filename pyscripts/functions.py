@@ -120,16 +120,18 @@ class setup_job(object):
             file.write(new_content)
     
     def submit(self, script):
-        stdout = subprocess.check_output([self.submit_cmd, script]).decode('utf-8')
+        output = subprocess.run([self.submit_cmd, script], capture_output=True)
+        stdout = output.stdout.decode('utf-8')
         print(stdout, flush=1)
         return stdout
 
     def check(self, jobid):
-        stdout = subprocess.check_output([self.search_cmd, self.search_arg, jobid]).decode('utf-8')
+        output = subprocess.run([self.search_cmd, self.search_arg, jobid], check=False, capture_output=True)
+        stdout = output.stdout.decode('utf-8')
         if jobid in stdout:
             status = 0
-            print(stdout,flush=1)
+            print(stdout, flush=1)
         else:
             status = 1
-            print('JOB ID: '+jobid+' Finished',flush=1)
+            print('JOB ID: '+jobid+' Finished', flush=1)
         return status

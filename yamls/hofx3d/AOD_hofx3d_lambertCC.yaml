@@ -47,7 +47,6 @@ geometry:
     - dlsvpdT
     - qsat
     - svp
-    - aerosol_optical_depth_at_550
     levels: 42
   - variables:
     - air_pressure_levels
