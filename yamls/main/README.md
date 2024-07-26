@@ -13,6 +13,7 @@ genint:
   obsname: v.viirs-m_npp
   bkgname: wrfchem
   simulated_varname: aerosolOpticalDepth
+  tracer_name: no2
 Data:
   input: 
     obs: '/data/users/swei/Dataset/VIIRS_NPP/ioda_viirs_aod-wxaq'
@@ -48,7 +49,9 @@ jobconf:
   * `jediyaml:` yaml file for genint application
   * `obsname:` Name of observation, used to create output folder (obsname_bkgname)
   * `bkgname:` Name of target model, used to create output folder
-  * `simulated_varname:` simulated variable name used in JEDI
+  * `simulated_varname:` simulated variable name used in JEDI,
+    * List: aerosolOpticalDepth, nitrogendioxideTotal, nitrogendioxideColumn, carbonmonoxideTotal
+  * `tracer_name:` long name for trace gas (e.g., volume_mixing_ratio_of_no2, volume_mixing_ratio_of_co)
 * `Data:`
   * `input:` the last level of path under input will be linked to Data/input/<key>
     * `obs:` observation folder, linked to workdir/Data/input/obs 
