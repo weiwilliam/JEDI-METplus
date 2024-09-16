@@ -1,5 +1,5 @@
 time window:
-  begin: 2020-09-03T18:00:00Z
+  begin: define_every_cycle
   length: PT6H
 geometry:
   function space: StructuredColumns
@@ -7,31 +7,42 @@ geometry:
     type: regular_lonlat
     nx: 1536
     ny: 768
+  halo: 1
   groups:
-  - map jedi names:
-      dust1: mass_fraction_of_dust001_in_air
-      dust2: mass_fraction_of_dust002_in_air
-      dust3: mass_fraction_of_dust003_in_air
-      dust4: mass_fraction_of_dust004_in_air
-      dust5: mass_fraction_of_dust005_in_air
-      seas1: mass_fraction_of_sea_salt001_in_air
-      seas2: mass_fraction_of_sea_salt002_in_air
-      seas3: mass_fraction_of_sea_salt003_in_air
-      seas4: mass_fraction_of_sea_salt004_in_air
-      seas5: mass_fraction_of_sea_salt005_in_air
-      oc1: mass_fraction_of_hydrophobic_organic_carbon_in_air
-      oc2: mass_fraction_of_hydrophilic_organic_carbon_in_air
-      bc1: mass_fraction_of_hydrophobic_black_carbon_in_air
-      bc2: mass_fraction_of_hydrophilic_black_carbon_in_air
-      sulf: mass_fraction_of_sulfate_in_air
-      tmp: air_temperature
-      spfh: specific_humidity
-      dpres: air_pressure_thickness
-      relative_humidity: relative_humidity
-      humidity_mixing_ratio: humidity_mixing_ratio
-      air_pressure: air_pressure
-    vertical coordinate: akbk
-    ak: [20.0, 64.2470, 137.790, 221.9580, 318.2660, 428.4340,
+  - variables:
+    - mass_fraction_of_dust001_in_air
+    - mass_fraction_of_dust002_in_air
+    - mass_fraction_of_dust003_in_air
+    - mass_fraction_of_dust004_in_air
+    - mass_fraction_of_dust005_in_air
+    - mass_fraction_of_sea_salt001_in_air
+    - mass_fraction_of_sea_salt002_in_air
+    - mass_fraction_of_sea_salt003_in_air
+    - mass_fraction_of_sea_salt004_in_air
+    - mass_fraction_of_sea_salt005_in_air
+    - mass_fraction_of_hydrophobic_organic_carbon_in_air
+    - mass_fraction_of_hydrophilic_organic_carbon_in_air
+    - mass_fraction_of_hydrophobic_black_carbon_in_air
+    - mass_fraction_of_hydrophilic_black_carbon_in_air
+    - mass_fraction_of_sulfate_in_air
+    - air_temperature
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - humidity_mixing_ratio
+    - air_pressure
+    - relative_humidity
+    - dlsvpdT
+    - qsat
+    - svp
+    levels: 64
+  - variables:
+    - air_pressure_levels
+    levels: 65
+  - variables:
+    - surface_pressure
+    levels: 1
+  model data:
+    sigma_pressure_hybrid_coordinate_a_coefficient: [
+         20.0, 64.2470, 137.790, 221.9580, 318.2660, 428.4340,
          554.4240, 698.4570, 863.0580, 1051.080, 1265.7520, 
          1510.7110, 1790.0510, 2108.3660, 2470.7880, 2883.0380,
          3351.460, 3883.0520, 4485.4930, 5167.1460, 5937.050,
@@ -44,7 +55,8 @@ geometry:
          2051.150, 1554.7890, 1143.9880, 812.4890, 552.720, 
          356.2230, 214.0150, 116.8990, 55.7120, 21.5160, 5.7410, 
          0.5750, 0.0, 0.0]
-    bk: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    sigma_pressure_hybrid_coordinate_b_coefficient: [
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
          0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
          3.697e-050, 0.000431060, 0.001635910, 0.004106710, 
          0.008294020, 0.014637120, 0.023555880, 0.035441620, 
@@ -55,48 +67,81 @@ geometry:
          0.76851470, 0.79930970, 0.82731880, 0.85259070, 0.87522360,
          0.8953550, 0.9131510, 0.92879730, 0.94249110, 0.95443410, 
          0.96482760, 0.97386760, 0.98174230, 0.98862660, 0.99467120, 1.0]
-    levels: 64
-    top pressure: 50
-  - map jedi names:
-      air_pressure_levels: air_pressure_levels
-    levels: 65
+    nLevels: 64
+  alias:
+  - in code: mass_fraction_of_dust001_in_air
+    in file: dust1
+  - in code: mass_fraction_of_dust002_in_air
+    in file: dust2
+  - in code: mass_fraction_of_dust003_in_air
+    in file: dust3
+  - in code: mass_fraction_of_dust004_in_air
+    in file: dust4
+  - in code: mass_fraction_of_dust005_in_air
+    in file: dust5
+  - in code: mass_fraction_of_sea_salt001_in_air
+    in file: seas1
+  - in code: mass_fraction_of_sea_salt002_in_air
+    in file: seas2
+  - in code: mass_fraction_of_sea_salt003_in_air
+    in file: seas3
+  - in code: mass_fraction_of_sea_salt004_in_air
+    in file: seas4
+  - in code: mass_fraction_of_sea_salt005_in_air
+    in file: seas5
+  - in code: mass_fraction_of_hydrophobic_organic_carbon_in_air
+    in file: oc1
+  - in code: mass_fraction_of_hydrophilic_organic_carbon_in_air
+    in file: oc2
+  - in code: mass_fraction_of_hydrophobic_black_carbon_in_air
+    in file: bc1
+  - in code: mass_fraction_of_hydrophilic_black_carbon_in_air
+    in file: bc2
+  - in code: mass_fraction_of_sulfate_in_air 
+    in file: sulf
+  - in code: water_vapor_mixing_ratio_wrt_moist_air
+    in file: spfh
+  - in code: air_temperature
+    in file: tmp
+  - in code: surface_pressure
+    in file: pressfc
 
 state:
   state variables:
-  - dust1
-  - dust2
-  - dust3
-  - dust4
-  - dust5
-  - seas1
-  - seas2
-  - seas3
-  - seas4
-  - seas5
-  - bc1
-  - bc2
-  - oc1
-  - oc2
-  - sulf
-  - spfh
-  - tmp
-  - dpres
-  filepath: model_in_file
+  - mass_fraction_of_dust001_in_air
+  - mass_fraction_of_dust002_in_air
+  - mass_fraction_of_dust003_in_air
+  - mass_fraction_of_dust004_in_air
+  - mass_fraction_of_dust005_in_air
+  - mass_fraction_of_sea_salt001_in_air
+  - mass_fraction_of_sea_salt002_in_air
+  - mass_fraction_of_sea_salt003_in_air
+  - mass_fraction_of_sea_salt004_in_air
+  - mass_fraction_of_sea_salt005_in_air
+  - mass_fraction_of_hydrophobic_organic_carbon_in_air
+  - mass_fraction_of_hydrophilic_organic_carbon_in_air
+  - mass_fraction_of_hydrophobic_black_carbon_in_air
+  - mass_fraction_of_hydrophilic_black_carbon_in_air
+  - mass_fraction_of_sulfate_in_air
+  - air_temperature
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - surface_pressure
+  filepath: define_every_cycle
   netcdf extension: nc4
-  date: model_in_date
+  date: define_every_cycle
 
 observations:
   observers:
   - obs space:
-      name: viirs_npp_aod-thinned
+      name: define_in_mainyaml
       obsdatain:
         engine:
           type: H5File
-          #obsfile: tropomi_no2_tropo_%valid_date%_m_singleobs.nc4
+          obsfile: define_every_cycle
       obsdataout:
         engine:
           type: H5File
-          #obsfile: output/tropomi_no2_hofx_wrfout_%valid_date%_m.nc
+          obsfile: define_every_cycle
       _source: noaa
       simulated variables: [aerosolOpticalDepth]
       observed variables: [aerosolOpticalDepth]
@@ -105,10 +150,13 @@ observations:
       name: AodCRTM
       Absorbers: [H2O,O3]
       obs options:
-        Sensor_ID: v.viirs-m_npp
+        Sensor_ID: define_by_genint_obsname
         EndianType: little_endian
-        CoefficientPath: CRTM/
-        AerosolOption: aerosols_gocart_default
-        model units coeff: 1.0e9
+        CoefficientPath: Data/input/crtm/
+        AerosolCoeff_File: AerosolCoeff.GOCART-GEOS5.nc4
+        AerosolCoeff_Format: netCDF
+        AerosolOption: aerosols_gocart_gefs
+        model units coeff: 1.0e-2
     obs error:
       covariance model: diagonal
+

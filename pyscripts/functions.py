@@ -1,25 +1,10 @@
 #!/usr/bin/env python3
-__all__ = ['run_job','check_job','get_dates','set_size','setup_cmd']
+__all__ = ['get_dates','set_size','setup_cmd', 'set_area', 'find_stats']
 import subprocess
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from shutil import which
-
-def run_job(script):
-    stdout = subprocess.check_output(["sbatch", script]).decode('utf-8')
-    print(stdout,flush=1)
-    return stdout
-
-def check_job(jobid):
-    stdout = subprocess.check_output(["squeue", "-j", jobid]).decode('utf-8')
-    if jobid in stdout:
-        status = 0
-        print(stdout,flush=1)
-    else:
-        status = 1
-        print('JOB ID: '+jobid+' Finished',flush=1)
-    return status
 
 def get_dates(sdate,edate,hint):
     from datetime import datetime, timedelta
@@ -28,6 +13,12 @@ def get_dates(sdate,edate,hint):
     delta = timedelta(hours=hint)
     dates = pd.date_range(start=date1, end=date2, freq=delta)
     return dates
+
+def find_stats(statsfile):
+    f = open(statsfile, 'r')
+    find = len(f.readlines()) > 1
+    f.close()
+    return find
 
 def set_size(w,h, ax=None, l=None, r=None, t=None, b=None):
     """ w, h: width, height in inches """
@@ -53,20 +44,12 @@ def set_size(w,h, ax=None, l=None, r=None, t=None, b=None):
     figh = float(h)/(t-b)
     ax.figure.set_size_inches(figw, figh)
 
-def setup_cmd(conf):
-    from shutil import which
-
-    if conf['platform'] == 's4':
-        # execcmd = which('srun')+' --cpu_bind=core'
-        execcmd = which('mpiexec')+' -n %s' % (conf['n_task'])
-    elif conf['platform'] in ['orion', 'discover']:
-        execcmd = which('mpirun')
-    elif conf['platform'] == 'derecho':
-        execcmd = which('mpiexec')+' -n %s -ppn %s' % (conf['n_node'],str(conf['n_task']/conf['n_node']) )
-    else:
-        raise Exception('Not supported platform')
-
-    return execcmd
+def set_area(areaname):
+    if areaname == 'glb':
+        minlon = -180.; maxlon = 180.; minlat = -90.; maxlat = 90.
+    elif areaname == 'wxaq':
+        minlon = -81.; maxlon = -70; minlat = 39.8; maxlat = 46.
+    return minlon, maxlon, minlat, maxlat
 
 class setup_job(object):
 
@@ -79,6 +62,7 @@ class setup_job(object):
         self.account = conf['account']
         self.partition = conf['partition']
         self.qos = conf['qos']
+        self.memory = conf['memory']
         self.check_freq = conf['check_freq']
         self._setcmds()
 
@@ -116,6 +100,7 @@ class setup_job(object):
         new_content = new_content.replace('%N_NODE%', str(self.n_node))
         new_content = new_content.replace('%N_TASK%', str(self.n_task))
         new_content = new_content.replace('%LOGFILE%', args['logfile'])
+        new_content = new_content.replace('%MEMORY%', str(self.memory))
         with open(args['jobcard'], 'w') as file:
             file.write(new_content)
     
@@ -123,6 +108,8 @@ class setup_job(object):
         output = subprocess.run([self.submit_cmd, script], capture_output=True)
         stdout = output.stdout.decode('utf-8')
         print(stdout, flush=1)
+        stderr = output.stderr.decode('utf-8')
+        print(stderr, flush=1)
         return stdout
 
     def check(self, jobid):

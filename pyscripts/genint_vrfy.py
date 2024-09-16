@@ -14,8 +14,7 @@ import produtil.setup
 from metplus.util import metplus_check
 from metplus.util import pre_run_setup, run_metplus, post_run_cleanup
 from metplus import __version__ as metplus_version
-from functions import setup_job, setup_cmd, get_dates
-# from functions import run_job, check_job, setup_cmd, get_dates
+from functions import setup_job, get_dates
 
 # Load the configuration defined by main yaml file
 main_yaml = sys.argv[1]
@@ -23,6 +22,7 @@ conf = yaml.load(open(main_yaml),Loader=yaml.FullLoader)
 
 run_jedihofx = conf['run_jedihofx']
 run_met_plus = conf['run_met_plus']
+restart = conf['restart']
 timeconf = conf['time']
 metconf = conf['metplus']
 jobconf = conf['jobconf']
@@ -54,32 +54,34 @@ pathlist = [wrkpath, logpath, datapath, inpath, outpath,
             gvalout_path,
             ]
 
-if os.path.exists(wrkpath):
-    shutil.rmtree(wrkpath)
+if restart:
+    for dir in pathlist:
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+else:
+    for dir in pathlist:
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+        else:
+            shutil.rmtree(dir)
+            os.makedirs(dir)
+    for fhr in metconf['verify_fhours']:
+        subfhr_hofx = os.path.join(hofxout_path, 'f%.2i'%(fhr))
+        os.makedirs(subfhr_hofx)
 
-for dir in pathlist:
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-    else:
-        shutil.rmtree(dir)
-        os.makedirs(dir)
-
-for fhr in metconf['verify_fhours']:
-    subfhr_hofx = os.path.join(hofxout_path, 'f%.2i'%(fhr))
-    os.makedirs(subfhr_hofx)
-
-os.chdir(wrkpath)
-os.symlink(outpath, 'Data/output')
-
-if run_jedihofx:
-
-    # Create symbolic links of needed input folders
+    # Create symbolic links of needed input/output folders
+    os.symlink(outpath, wrkpath+'/Data/output')
     for dir in ['bkg','obs','crtm']:
         os.symlink(dataconf['input'][dir], os.path.join(inpath,dir))
+
+os.chdir(wrkpath)
+
+if run_jedihofx:
     
     wlnth = timedelta(hours=window_length)
     dates = get_dates(timeconf['sdate'], timeconf['edate'], timeconf['dateint'])
-    
+
+    # Setup job confs    
     job = setup_job(jobconf)
     in_jobhead = os.path.join(srcpath, 'etc', job.header)
     
@@ -147,7 +149,6 @@ if run_jedihofx:
             # Update jobcard
             job.create_job(in_jobhdr=in_jobhead, jobcard=wrkjobcard, logfile=logfile)
     
-            # execcmd = setup_cmd(jobconf)
             cmd_str = job.execcmd+' '+fullexec+' '+wrkyaml #+' 2> stderr.$$.log 1> stdout.$$.log'
             with open(wrkjobcard,'a') as f:
                 f.write(cmd_str)
@@ -196,7 +197,29 @@ if run_met_plus:
     with open(wk_statanalysis_conf, 'w') as file:
         file.write(mp_confs)
     
-    #   Running METplus
-    metplus_conf = pre_run_setup(wk_statanalysis_conf)
-    total_errors = run_metplus(metplus_conf)
-    post_run_cleanup(metplus_conf, 'METplus', total_errors)
+    # Running METplus
+    mp_jobcard = os.path.join(wrkpath, 'run_metplus.batch')
+    mp_logfile = os.path.join(logpath, 'runmp.%s_%s.log' %(str(timeconf['sdate']), str(timeconf['edate'])))
+
+    # Setup job confs    
+    mpjob = setup_job(metconf)
+    in_jobhead = os.path.join(srcpath, 'etc', mpjob.header)
+
+    mpjob.create_job(in_jobhdr=in_jobhead, jobcard=mp_jobcard, logfile=mp_logfile)
+
+    cmd_str = 'run_metplus.py -c ' + wk_statanalysis_conf
+    with open(mp_jobcard,'a') as f:
+        f.write(cmd_str)
+
+    output = mpjob.submit(mp_jobcard)
+    jobid = output.split()[-1]
+    if metconf['platform']=='derecho': time.sleep(15)
+    if metconf['check_freq'] != -1:
+        status = 0
+        while status == 0:
+            status = mpjob.check(jobid)
+            if status == 0: time.sleep(metconf['check_freq'])
+
+    #metplus_conf = pre_run_setup(wk_statanalysis_conf)
+    #total_errors = run_metplus(metplus_conf)
+    #post_run_cleanup(metplus_conf, 'METplus', total_errors)

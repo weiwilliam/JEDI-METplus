@@ -7,6 +7,7 @@
 #SBATCH --partition=%PARTITION%
 #SBATCH --qos=%QOS%
 #SBATCH --output=%LOGFILE%
+#SBATCH --mem=%MEMORY%
 
 set -x
 

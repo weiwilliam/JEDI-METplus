@@ -19,7 +19,7 @@ if os.path.exists(hofx_file):
         ioda_df[var_name + '@hofx'] = ioda_hofx[var_name]
     
     # Add columns for needed attributes, for each variable present for hofx
-    for attribute in ['ObsValue', 'EffectiveQC']:
+    for attribute in ['ObsValue', 'EffectiveQC', 'PreQC']:
         ioda_attr = xr.open_dataset(hofx_file, group = attribute)
         for var_name in hofx_vars:
             ioda_df[var_name + '@' + attribute] = ioda_attr[var_name]
@@ -45,12 +45,13 @@ if os.path.exists(hofx_file):
     for var_name in hofx_vars:
         
         # Set up the needed columns
-        ioda_df_var = ioda_df[['datetime','latitude','longitude',
-                            var_name+'@hofx',var_name+'@ObsValue',
-                            var_name+'@EffectiveQC']]
+        ioda_df_var = ioda_df[['datetime', 'latitude','longitude',
+                            var_name+'@hofx', var_name+'@ObsValue',
+                            var_name+'@PreQC', var_name+'@EffectiveQC']]
         
-        # Cute down to locations with valid ObsValues
-        ioda_df_var = ioda_df_var[abs(ioda_df_var[var_name+'@ObsValue']) < 1e6] 
+        # Cut down to locations with valid ObsValues
+        ioda_df_var = ioda_df_var[ioda_df_var[var_name+'@PreQC'] == 0] 
+        # ioda_df_var = ioda_df_var[abs(ioda_df_var[var_name+'@ObsValue']) < 1e6] 
         nlocs = len(ioda_df_var.index)
         print(var_name+' has '+str(nlocs)+' valid obs.')
         

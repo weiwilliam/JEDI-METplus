@@ -4,27 +4,27 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from functions import get_dates, set_size
+from functions import get_dates, set_size, find_stats
 
 # plotting adjustment
 plot_quality = 300
 axe_w = 7
 axe_h = 3
 
-sdate = 2024060100
-edate = 2024063018
-vrfy_fhr = 6
+sdate = 2019070100
+edate = 2019073118
+vrfy_fhr = 0
 vrfy_freq = 6
-vrfy_product = 'TEMPO_no2_tropo_wrfchem' # 'tropomi_no2_tropo'
+vrfy_product = 'v.viirs-m_npp_gefs-aer'
 vrfy_stat = 'SL1L2'
-unit_str = 'mol m$^{-2}$'
+unit_str = '' # 'mol m$^{-2}$'
 
 srcpath = os.path.join(os.path.dirname(__file__),'..')
-stats_path = os.path.join(srcpath, 'output', vrfy_product, 'stats', 'f%.3i'%(vrfy_fhr))
-plts_path = os.path.join(srcpath, 'output', vrfy_product, 'plots', 'f%.3i'%(vrfy_fhr))
+stats_path = os.path.join(srcpath, 'output', vrfy_product, 'stats', 'f%.2i'%(vrfy_fhr))
+plts_path = os.path.join(srcpath, 'output', vrfy_product, 'plots', 'f%.2i'%(vrfy_fhr))
 
 if not os.path.exists(stats_path):
-    raise Exception('Stats of '+vrfy_product+' is not available')
+    raise Exception(f'Stats of {stats_path} is not available')
 
 if not os.path.exists(plts_path):
     os.makedirs(plts_path)
@@ -39,37 +39,22 @@ col = None
 stats_dict = {}
 i = 0
 for cdate in wrk_dates:
-
     cdatefile = cdate.strftime('%Y%m%d%H.out')
     stats_file = os.path.join(stats_path, cdatefile)
+    print(f'Processing {stats_file}')
     if not os.path.exists(stats_file):
         print(f'WARNING: Skip {cdatefile}, {stats_file} is not available')
         continue
 
-    find_stats = False
-    f = open(stats_file,'r')
-    for line in f.readlines():
-        if 'COL_NAME:' in line and col is None:
-            col = line.split()[1:]
-        if vrfy_stat in line:
-            stats = line.split()[1:]
-            find_stats = True
-    f.close()
-    if not find_stats:
+    if not find_stats(stats_file):
         print(f'WARNING: Skip {cdatefile}, did not find stats: {vrfy_stat}')
         continue
+    
+    tmpdf = pd.read_csv(stats_file, skiprows=1, delim_whitespace=True)
 
-    stats_dict['datetime'] = cdate
-    for icol in range(len(col)):
-        if col[icol]=='FCST_VAR':
-            stats_dict[col[icol]] = [stats[icol]]
-        elif col[icol]=='TOTAL':
-            stats_dict[col[icol]] = [int(stats[icol])]
-        else:
-            stats_dict[col[icol]] = [float(stats[icol])]
 
-    tmpdf = pd.DataFrame(stats_dict)
-
+    tmpdf['datetime'] = cdate
+    
     if i==0:
         outdf = tmpdf
     else:
@@ -86,7 +71,7 @@ for stat in ['COUNT','BIAS','RMSE']:
         stat_df = outdf['TOTAL']
     df[stat] = stat_df
 
-ylbstr = '%s (%s)' %(stats_dict['FCST_VAR'][0],unit_str)
+ylbstr = '%s (%s)' %(outdf['FCST_VAR'][0],unit_str)
 
 # Plot bias and RMSE
 fig, ax = plt.subplots()
