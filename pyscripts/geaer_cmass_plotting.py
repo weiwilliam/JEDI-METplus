@@ -52,7 +52,7 @@ if plot_max:
         ax = plt.subplot(projection=proj)
         set_size(axe_w,axe_h,l=0.1,b=0.1,r=0.9)
         ax.set_extent((minlon,maxlon,minlat,maxlat), crs=ccrs.PlateCarree())
-        plot_data.plot.contourf(ax=ax, vmin=0, vmax=100, transform=proj,
+        plot_data.plot.contourf(ax=ax, transform=proj,
                            cbar_kwargs={'orientation':cb_ori,'fraction':cb_frac,'pad':cb_pad,'aspect':cb_asp,'label':var})
  
         if area == 'glb':

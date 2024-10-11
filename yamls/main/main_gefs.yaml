@@ -1,30 +1,39 @@
+run_jedihofx: True
+run_met_plus: True
+restart: False
 time:
-  sdate: 2024012100
-  edate: 2024012100
-  dateint: 24
+  sdate: 2019070106
+  edate: 2019073118
+  dateint: 6
+genint:
+  build: /data/users/swei/Git/JEDI/JEDI-METplus/genint-bundle/build
+  jediexec: quenchxx_hofx3d.x
+  jediyaml: AOD_hofx3d_gaussian_gefs.yaml
+  obsname: v.viirs-m_npp
+  bkgname: gefs-aer
+  simulated_varname: aerosolOpticalDepth
+Data:
+  input: 
+    obs: '/data/users/swei/Dataset/jedi-data/input/obs/viirs_npp_aod-thinned_p95'
+    bkg: '/ships19/aqda/lenzen/JPSS/GEFS_AER'
+    crtm: '/data/users/swei/Git/JEDI/JEDI-METplus/genint-bundle/build/crtm/test/testinput'
+  output: '/data/users/swei/Git/JEDI/JEDI-METplus/output'
+  #obs_template: 'test.%Y%m%d%H.nc4'
+  obs_template: 'viirs_npp_aod-thinned_p95.%Y%m%d%H.nc4'
+  bkg_template: '%Y%m/geaer.%Y%m%d%H.atm'
+metplus:
+  verify_fhours: [0]
+  met_conf_temp: StatAnalysis.conf_tmpl
+  ioda2metmpr: ioda2metplusmpr.py 
 jobconf:
-  platfrom: s4
-  jobname: genint_gefs
-  n_node: 1
-  n_task: 6
+  platform: s4
+  jobname: qxxgenint_gefsaer
+  n_node: 4
+  n_task: 128
+  walltime: '2:00:00'
   account: star
   partition: s4
   qos: normal
-  check_freq: 10
-genint:
-  build: /data/users/swei/Git/JEDI/genint-bundle/build 
-  jediexec: genint_hofx3d.x
-  jediyaml: AOD_hofx3d_lambertCC.yaml
-Data:
-  input: /data/users/swei/Git/JEDI/JEDI-METplus/input
-  link:
-    - obs: '/data/users/swei/Dataset/VIIRS_NPP/ioda_viirs_aod'
-    - bkg: '/ships19/aqda/lenzen/JPSS/GEFS_AER/%Y%m'
-    - crtm: '/data/users/swei/Git/JEDI/genint-bundle/build/crtm/test/testinput'
-  output: /data/users/swei/Git/JEDI/JEDI-METplus/output
-  obs_template: 'VIIRS_NPP_%Y%m%d%H.nc'
-  bkg_template: 'wrfout_d01_%Y%m%d_%H0000'
-metplus:
-  verify_fhours: [6]
-  met_conf_temp: StatAnalysis.conf_tmpl
-  ioda2metmpr: ioda2metplusmpr.py 
+  check_freq: 60
+  memory: '112000M'
+

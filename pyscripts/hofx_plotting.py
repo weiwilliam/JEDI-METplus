@@ -12,9 +12,9 @@ from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 from functions import set_size, get_dates, set_area
 
 # Plotting control
-axe_w = 8; axe_h = 4; plot_quality = 300
+axe_w = 8; axe_h = 5; plot_quality = 300
 # Level control
-vmin = 0; vmax = 1.5 # vmax = 1.e-4
+vmin = 0; vmax = 2 # vmax = 1.e-4
 # Colorbar control
 cb_ori = 'vertical'
 cb_frac = 0.025
@@ -30,8 +30,8 @@ plot_product = 'v.viirs-m_npp_gefs-aer'
 plot_var = 'aerosolOpticalDepth:4'
 
 vrfy_fhr = 0
-sdate = 2019070106
-edate = 2019070112
+sdate = 2019070318
+edate = 2019073118
 hint = 6
 dates = get_dates(sdate, edate, hint)
 

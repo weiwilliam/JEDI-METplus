@@ -4,10 +4,10 @@ time window:
 geometry:
   function space: StructuredColumns
   grid:
-    type: regular_lonlat
-    nx: 1536
-    ny: 768
+    type: regular_gaussian
+    N: 384
   halo: 1
+  latitude south to north: false
   groups:
   - variables:
     - mass_fraction_of_dust001_in_air
@@ -156,7 +156,6 @@ observations:
         AerosolCoeff_File: AerosolCoeff.GOCART-GEOS5.nc4
         AerosolCoeff_Format: netCDF
         AerosolOption: aerosols_gocart_gefs
-        model units coeff: 1.0e-2
     obs error:
       covariance model: diagonal
 
