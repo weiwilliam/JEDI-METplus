@@ -35,7 +35,8 @@ def isinside(lat_arr, lon_arr, poly_file):
 class cropioda(object):
     def __init__(self, input, output, polygon):
         src = nc.Dataset(input, 'r')
-        dst = nc.Dataset(output, 'w')
+        if src.dimensions['Location'].size == 0:
+            raise Exception('no obs available')
 
         lat = src.groups['MetaData'].variables['latitude'][:].ravel()
         lon = src.groups['MetaData'].variables['longitude'][:].ravel()
@@ -47,6 +48,7 @@ class cropioda(object):
         else:
             print(f'{np.count_nonzero(mask)} obs in the target area')
 
+        dst = nc.Dataset(output, 'w')
         dst.setncatts(src.__dict__)
 
         for name, dimension in src.dimensions.items():
@@ -56,11 +58,18 @@ class cropioda(object):
                 dst.createDimension(name, len(dimension) if not dimension.isunlimited() else None)
 
         for name, variable in src.variables.items():
+            print(f'Processing {variable}')
             # Define the variable in the new file
             dst_var = dst.createVariable(name, variable.datatype, variable.dimensions)
-
             # Copy variable attributes
             dst_var.setncatts(variable.__dict__)
+            if 'Location' in variable.dimensions:
+                indices = [slice(None)] * variable.ndim
+                dim_index = variable.dimensions.index('Location')
+                indices[dim_index] = mask
+                dst_var[:] = variable[tuple(indices)]
+            else:
+                dst_var[:] = variable[:]
 
         for grp, group in src.groups.items():
             dst_grp = dst.createGroup(grp)

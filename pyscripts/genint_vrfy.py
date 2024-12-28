@@ -117,7 +117,7 @@ if run_jedihofx:
             if init_cyc not in dataconf['bkg_init_cyc']:
                 if verbose: print(f'{init_cyc} is not in bkg init cycle list')
                 continue
-            print('Processing %s f%.2i' %(cdate_str1, fhr))
+            print('Processing f%.2i valid at %s' %(fhr, cdate_str1))
     
             # execute the genint_hofx3d
             yaml_file = os.path.join(srcpath,'yamls',genintconf['jediyaml'])
@@ -211,25 +211,26 @@ if run_met_plus:
     mp_jobcard = os.path.join(wrkpath, 'run_metplus.batch')
     mp_logfile = os.path.join(logpath, 'runmp.%s_%s.log' %(str(timeconf['sdate']), str(timeconf['edate'])))
 
-    # Setup job confs    
-    mpjob = setup_job(metconf)
-    in_jobhead = os.path.join(srcpath, 'etc', mpjob.header)
+    if metconf['submit']:
+        # Setup job confs    
+        mpjob = setup_job(metconf)
+        in_jobhead = os.path.join(srcpath, 'etc', mpjob.header)
 
-    mpjob.create_job(in_jobhdr=in_jobhead, jobcard=mp_jobcard, logfile=mp_logfile)
+        mpjob.create_job(in_jobhdr=in_jobhead, jobcard=mp_jobcard, logfile=mp_logfile)
 
-    cmd_str = 'run_metplus.py -c ' + wk_statanalysis_conf
-    with open(mp_jobcard,'a') as f:
-        f.write(cmd_str)
+        cmd_str = 'run_metplus.py -c ' + wk_statanalysis_conf
+        with open(mp_jobcard,'a') as f:
+            f.write(cmd_str)
 
-    output = mpjob.submit(mp_jobcard)
-    jobid = output.split()[-1]
-    if metconf['platform']=='derecho': time.sleep(15)
-    if metconf['check_freq'] != -1:
-        status = 0
-        while status == 0:
-            status = mpjob.check(jobid)
-            if status == 0: time.sleep(metconf['check_freq'])
-
-    #metplus_conf = pre_run_setup(wk_statanalysis_conf)
-    #total_errors = run_metplus(metplus_conf)
-    #post_run_cleanup(metplus_conf, 'METplus', total_errors)
+        output = mpjob.submit(mp_jobcard)
+        jobid = output.split()[-1]
+        if metconf['platform']=='derecho': time.sleep(15)
+        if metconf['check_freq'] != -1:
+            status = 0
+            while status == 0:
+                status = mpjob.check(jobid)
+                if status == 0: time.sleep(metconf['check_freq'])
+    else:
+        metplus_conf = pre_run_setup(wk_statanalysis_conf)
+        total_errors = run_metplus(metplus_conf)
+        post_run_cleanup(metplus_conf, 'METplus', total_errors)
