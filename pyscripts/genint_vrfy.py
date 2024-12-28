@@ -22,14 +22,13 @@ conf = yaml.load(open(main_yaml),Loader=yaml.FullLoader)
 
 run_jedihofx = conf['run_jedihofx']
 run_met_plus = conf['run_met_plus']
+verbose = conf['verbose']
 restart = conf['restart']
 timeconf = conf['time']
 metconf = conf['metplus']
 jobconf = conf['jobconf']
 genintconf = conf['genint']
 dataconf = conf['Data']
-window_length = 6
-
 
 # Create work and output folders
 casename = genintconf['obsname'] + '_' + genintconf['bkgname']
@@ -77,7 +76,8 @@ else:
 os.chdir(wrkpath)
 
 if run_jedihofx:
-    
+   
+    window_length = dataconf['obs_window_length']
     wlnth = timedelta(hours=window_length)
     dates = get_dates(timeconf['sdate'], timeconf['edate'], timeconf['dateint'])
 
@@ -111,9 +111,13 @@ if run_jedihofx:
                 ret_nlev = ds.Layer.size
     
         for fhr in metconf['verify_fhours']:
-            print('Processing %s f%.2i' %(cdate_str1, fhr))
             init_date = cdate - timedelta(hours=fhr)
             init_dstr = init_date.strftime('%Y%m%d%H')
+            init_cyc = init_date.strftime('%H')
+            if init_cyc not in dataconf['bkg_init_cyc']:
+                if verbose: print(f'{init_cyc} is not in bkg init cycle list')
+                continue
+            print('Processing %s f%.2i' %(cdate_str1, fhr))
     
             # execute the genint_hofx3d
             yaml_file = os.path.join(srcpath,'yamls',genintconf['jediyaml'])
@@ -123,12 +127,17 @@ if run_jedihofx:
     
             # Update time window and dump to working yaml
             conf_temp['time window']['begin'] = w_beg_str
+            conf_temp['time window']['length'] = f'PT{window_length}H'
             conf_temp['state']['date'] = cdate_str3
             if '{init_date}' in dataconf['bkg_template']:
                 bkg_file = cdate.strftime(dataconf['bkg_template'].format(init_date=init_dstr))
             else:
                 bkg_file = cdate.strftime(dataconf['bkg_template'])
+
             conf_temp['state']['filepath'] = os.path.join(datapath,'input/bkg/',bkg_file)
+            if not os.path.exists(conf_temp['state']['filepath'] + dataconf['bkg_extension']):
+                print(f'{bkg_file} is not available for fcst={fhr}hr from {init_dstr}')
+                continue
     
             obsoutfile = os.path.join(datapath,'output/hofx','f%.2i' %(fhr), 'hofx_%s' %(cdate.strftime(dataconf['obs_template'])))
             for subobs_conf in conf_temp['observations']['observers']:
@@ -156,10 +165,11 @@ if run_jedihofx:
             output = job.submit(wrkjobcard)
             jobid = output.split()[-1]
             if jobconf['platform']=='derecho': time.sleep(15)
-            status = 0
-            while status == 0:
-                status = job.check(jobid)
-                if status == 0: time.sleep(jobconf['check_freq'])
+            if jobconf['check_freq'] != -1:
+                status = 0
+                while status == 0:
+                    status = job.check(jobid)
+                    if status == 0: time.sleep(jobconf['check_freq'])
     
             # Check the outputs
             hofx_file = subobs_conf['obs space']['obsdataout']['engine']['obsfile']
