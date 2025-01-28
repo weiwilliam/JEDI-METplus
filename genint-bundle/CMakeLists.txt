@@ -42,7 +42,7 @@ endif()
 
 ecbuild_bundle( PROJECT oops     GIT "https://github.com/jcsda-internal/oops.git"        BRANCH develop UPDATE )
 ecbuild_bundle( PROJECT vader    GIT "https://github.com/jcsda-internal/vader.git"       BRANCH feature/recipes_hmr_at_ap UPDATE)
-ecbuild_bundle( PROJECT saber    GIT "https://github.com/jcsda-internal/saber.git"       BRANCH feature/quench_convergence UPDATE)
+ecbuild_bundle( PROJECT saber    GIT "https://github.com/jcsda-internal/saber.git"       BRANCH develop UPDATE)
 
 ecbuild_bundle( PROJECT crtm     GIT "https://github.com/JCSDA/CRTMv3.git"               BRANCH develop UPDATE )
 ecbuild_bundle( PROJECT gsw      GIT "https://github.com/jcsda-internal/GSW-Fortran.git" BRANCH develop UPDATE )

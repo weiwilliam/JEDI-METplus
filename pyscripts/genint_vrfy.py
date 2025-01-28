@@ -18,7 +18,7 @@ from functions import setup_job, get_dates
 
 # Load the configuration defined by main yaml file
 main_yaml = sys.argv[1]
-conf = yaml.load(open(main_yaml),Loader=yaml.FullLoader)
+conf = yaml.load(open(main_yaml), Loader=yaml.FullLoader)
 
 run_jedihofx = conf['run_jedihofx']
 run_met_plus = conf['run_met_plus']
@@ -188,7 +188,9 @@ if run_met_plus:
     # Update the StatAnalysis.conf
     leadtime_liststr = ''
     for fhr in metconf['verify_fhours']:
-        leadtime_liststr += str(fhr)+', '
+        fhr_hofx_dir = os.path.join(hofxout_path, 'f%.2i'%(fhr))
+        if len(os.listdir(fhr_hofx_dir)) != 0:
+            leadtime_liststr += str(fhr)+', '
     
     py_input = '%s/f{lead_hour}/hofx_%s' %(hofxout_path, dataconf['obs_template'].replace('%Y%m%d%H','{valid?fmt=%Y%m%d%H}'))
     
@@ -203,6 +205,7 @@ if run_met_plus:
     mp_confs = mp_confs.replace('@leadtime@', leadtime_liststr)
     mp_confs = mp_confs.replace('@embedded_py@', embedded_py)
     mp_confs = mp_confs.replace('@embedded_input@', py_input)
+    mp_confs = mp_confs.replace('@mask_by_str@', metconf['mask_by'])
     #mp_confs = mp_confs.replace('@OBSTYPE@',obs_type)
     with open(wk_statanalysis_conf, 'w') as file:
         file.write(mp_confs)

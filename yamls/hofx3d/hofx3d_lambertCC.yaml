@@ -1,6 +1,6 @@
 time window:
   begin: define_every_cycle
-  length: PT6H
+  length: define_every_cycle
 geometry:
   function space: StructuredColumns
   partitioner: "checkerboard"
@@ -29,7 +29,7 @@ geometry:
     - air_pressure_levels
     levels: 43
   - variables:
-    - surface_pressure
+    - air_pressure_at_surface
     levels: 1
   model data:
     air_pressure_at_top_of_atmosphere_model: 50
@@ -59,13 +59,13 @@ geometry:
     in file: no2
   - in code: volume_mixing_ratio_of_co
     in file: co
-  - in code: surface_pressure
+  - in code: air_pressure_at_surface
     in file: PSFC
 state:
   state variables:
   - volume_mixing_ratio_of_no2
   - volume_mixing_ratio_of_co
-  - surface_pressure
+  - air_pressure_at_surface
   filepath: define_every_cycle
   netcdf extension: nc
   date: define_every_cycle
@@ -94,15 +94,3 @@ observations:
       stretchVertices: topbottom #options: top, bottom, topbottom, none
     obs error:
       covariance model: diagonal
-    #obs filters:
-    #  - filter: Domain Check
-    #    where:
-    #    - variable: 
-    #        name: MetaData/latitude
-    #      minvalue: 41.
-    #      maxvalue: 45.
-    #    - variable: 
-    #        name: MetaData/longitude
-    #      minvalue: -80.
-    #      maxvalue: -73.
-        

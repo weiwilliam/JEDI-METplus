@@ -30,20 +30,20 @@ plot_product = 'tempo_no2_tropo_wrfchem'
 # JEDI variable name, var:channel 
 plot_var = 'nitrogendioxideColumn'
 
-vrfy_fhr = 43
-sdate = 2024082219
-edate = 2024083119
-hint = 24
+vrfy_fhr_beg = 35
+vrfy_fhr_end = 47
+vrfy_fhrs = list(range(vrfy_fhr_beg, vrfy_fhr_end+1))
+vrfy_fhr_string = f'f{vrfy_fhr_beg}_to_f{vrfy_fhr_end}'
+
+sdate = 2024082211
+edate = 2024083123
+hint = 1
 dates = get_dates(sdate, edate, hint)
 
 unit_str = 'mol m$^{-2}$'
 
 srcpath = os.path.join(os.path.dirname(__file__),'..')
-hofx_path = os.path.join(srcpath, 'output', plot_product, 'hofx', 'f%.2i'%(vrfy_fhr))
-plts_path = os.path.join(srcpath, 'output', plot_product, 'plots','f%.2i'%(vrfy_fhr), '2dmap')
-
-if not os.path.exists(hofx_path):
-    raise Exception(f'HofX folder: {hofx_path} is not available')
+plts_path = os.path.join(srcpath, 'output', plot_product, 'plots', vrfy_fhr_string, '2dmap')
 
 if not os.path.exists(plts_path):
     os.makedirs(plts_path)
@@ -59,10 +59,20 @@ if area == 'glb':
 for cdate in dates:
     plot_date = cdate.strftime('%Y%m%d%H') 
     hofx_file = f'hofx_{obs_name}.{plot_date}.nc4'
-    print(f'Processing: {hofx_file}')
-    in_hofx = os.path.join(hofx_path,hofx_file)
-    if not os.path.exists(in_hofx):
-        print(f'WARNING: Skip {plot_date}, {hofx_file} is not available')
+
+    hofx_exists = False
+    for tmp_vrfy_fhr in vrfy_fhrs:
+        hofx_path = os.path.join(srcpath, 'output', plot_product, 'hofx', 'f%.2i'%(tmp_vrfy_fhr))
+        in_hofx = os.path.join(hofx_path,hofx_file)
+        if not os.path.exists(in_hofx):
+            print(f'WARNING: Skip {plot_date}, {hofx_file} from f{tmp_vrfy_fhr} is not available')
+            continue
+        else:
+            print(f'Processing: {in_hofx}')
+            hofx_exists = True
+            break
+
+    if not hofx_exists:
         continue
 
     raw_ds = xr.open_dataset(in_hofx)
@@ -127,9 +137,9 @@ for cdate in dates:
         cb.ax.ticklabel_format(axis='y', style='sci', scilimits=(0,0), useMathText=True)
         
         if ':' in plot_var:
-            plotname = f'{plot_type}_{varname}_ch{plot_ch}.{plot_date}.png'
+            plotname = f'{plot_type}_{varname}_ch{plot_ch}.{plot_date}.f{tmp_vrfy_fhr}.png'
         else:
-            plotname = f'{plot_type}_{varname}.{plot_date}.png'
+            plotname = f'{plot_type}_{varname}.{plot_date}.f{tmp_vrfy_fhr}.png'
         outname = os.path.join(plts_path,plotname)
         fig.savefig(outname,dpi=plot_quality)
         plt.close()

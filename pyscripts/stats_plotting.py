@@ -11,13 +11,18 @@ plot_quality = 300
 axe_w = 7
 axe_h = 3
 
-sdate = 2019070100
-edate = 2019073118
-vrfy_fhr = 0
-vrfy_freq = 6
+sdate = 2024082200
+edate = 2024083123
+vrfy_fhr_beg = 11
+vrfy_fhr_end = 23
+vrfy_freq = 1
 vrfy_product = 'v.viirs-m_npp_gefs-aer'
 vrfy_stat = 'SL1L2'
 unit_str = '' # 'mol m$^{-2}$'
+
+vrfy_fhrs = list(range(vrfy_fhr_beg, vrfy_fhr_end+1))
+
+sys.exit()
 
 srcpath = os.path.join(os.path.dirname(__file__),'..')
 stats_path = os.path.join(srcpath, 'output', vrfy_product, 'stats', 'f%.2i'%(vrfy_fhr))
@@ -29,7 +34,7 @@ if not os.path.exists(stats_path):
 if not os.path.exists(plts_path):
     os.makedirs(plts_path)
 
-wrk_dates = get_dates(sdate,edate,vrfy_freq)
+wrk_dates = get_dates(sdate, edate, vrfy_freq)
 
 dfdata = {'datetime':wrk_dates}
 df = pd.DataFrame(data=dfdata)
