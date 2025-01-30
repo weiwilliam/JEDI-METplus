@@ -25,6 +25,17 @@ metplus:
   verify_fhours: [0]
   met_conf_temp: StatAnalysis.conf_tmpl
   ioda2metmpr: ioda2metplusmpr.py 
+  submit: True
+  platform: s4
+  jobname: qxxgenint_gefsaer_metplus
+  n_node: 1
+  n_task: 1
+  walltime: '6:00:00'
+  account: star
+  partition: serial
+  qos: serial
+  check_freq: -1
+  memory: '94000M'
 jobconf:
   platform: s4
   jobname: qxxgenint_gefsaer

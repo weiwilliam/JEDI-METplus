@@ -24,6 +24,8 @@ metplus:
   verify_fhours: [6]
   met_conf_temp: StatAnalysis.conf_tmpl
   ioda2metmpr: ioda2metplusmpr.py 
+  mask_by: 'ObsValue<1e6'
+  submit: False
 jobconf:
   platform: s4
   jobname: qxxgenint_wrfchem
