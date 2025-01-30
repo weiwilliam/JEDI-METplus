@@ -1,44 +1,54 @@
 ## README for main yaml keys
 ```
 run_jedihofx: True
-run_met_plus: True
+run_met_plus: False
+restart: False
+verbose: False
 time:
-  sdate: 2024011718
-  edate: 2024012418
-  dateint: 24
+  sdate: 2024082211
+  edate: 2024082211
+  dateint: 1 
 genint:
-  build: /data/users/swei/Git/JEDI/qxx-genint/build
+  build: /work2/noaa/jcsda/shihwei/git/JEDI-METplus/genint-bundle/build 
   jediexec: quenchxx_hofx3d.x
-  jediyaml: AOD_hofx3d_lambertCC.yaml
-  obsname: v.viirs-m_npp
+  jediyaml: hofx3d_lambertCC.yaml
+  obsname: tempo_no2_tropo
   bkgname: wrfchem
-  simulated_varname: aerosolOpticalDepth
-  tracer_name: no2
+  simulated_varname: nitrogendioxideColumn
+  tracer_name: volume_mixing_ratio_of_no2
 Data:
   input: 
-    obs: '/data/users/swei/Dataset/VIIRS_NPP/ioda_viirs_aod-wxaq'
-    bkg: '/data/users/swei/Dataset/Wx-AQ'
-    crtm: '/data/users/swei/Git/JEDI/qxx-genint/build/crtm/test/testinput'
-  output: /data/users/swei/Git/JEDI/JEDI-METplus/output
-  obs_template: wxaq-VIIRS_NPP_%Y%m%d%H.nc
-  bkg_template: wrfgsi.out.%Y%m%d%H/wrfout_d01_%Y%m%d_%H0000
-metplus:
-  verify_fhours: [6]
-  met_conf_temp: StatAnalysis.conf_tmpl
-  ioda2metmpr: ioda2metplusmpr.py 
+    obs: '/work2/noaa/jcsda/shihwei/data/jedi-data/input/obs/tempo_no2_tropo-wxaq'
+    bkg: '/work2/noaa/jcsda/shihwei/data/jedi-data/input/bkg/wxaq'
+    crtm: '/work2/noaa/jcsda/shihwei/data/crtm_fix'
+  output: /work2/noaa/jcsda/shihwei/git/JEDI-METplus/output
+  obs_template: obs.tempo_no2_tropo-wxaq.%Y%m%d%H.nc4
+  obs_window_length: 1
+  bkg_template: wrfgsi.out.{init_date}/subset_wrfout_d01_%Y%m%d_%H0000
+  bkg_extension: .nc
+  bkg_init_cyc: ['00']
 jobconf:
-  platform: s4
+  platform: orion
   jobname: qxxgenint_wrfchem
   n_node: 1
   n_task: 1
-  walltime: '0:30:00'
-  account: star
-  partition: s4
-  qos: normal
-  check_freq: 10
+  account: da-cpu
+  partition: orion
+  walltime: 0:30:00
+  qos: batch
+  check_freq: -1
+  memory: '112000M'
+metplus:
+  verify_fhours: [7,8,9,10,11,12,13,14,15,16,17,18,19]
+  met_conf_temp: StatAnalysis.conf_tmpl
+  ioda2metmpr: ioda2metplusmpr.py 
+  mask_by: 'ObsValue<1e6'
+  submit: False
 ```
 * `run_jedihofx:` True: run genint hofx 3D 
 * `run_met_plus:` True: run met plus after JEDI hofx 3D finished
+* `restart`: True: no folder purging
+* `verbose`: True: print out more information
 * `time:`
   * `state:` first cycle (10-digit)
   * `edate:` last cycle (10-digit)
@@ -64,6 +74,8 @@ jobconf:
   * `verify_fhours:` List of forecast hours for verification
   * `met_conf_temp:` stat_analysis template
   * `ioda2metmpr:` python script to read IODA hofx file and provide matched paired dataset to METplus for statistics calculation
+  * `mask_by`: use the group of IODA to keep data points satisfied the condition for METplus calculation
+  * `submit`: True or False to run METplus on compute node or local, if it is true, please include the jobconf yaml keys under metplus section.
 * `jobconf:`
   * `platform:` platform name: s4, derecho, orion, discover
   * `jobname:` jobname when it submitted
@@ -71,6 +83,8 @@ jobconf:
   * `n_task:` number of tasks, use 1 for WRF-Chem for now
   * `walltime:` time limit for job
   * `account:` account name, it will be the project ID on Derecho
-  * `partition:`  run on which partition if applicable
+  * `partition:`  the partition to be submitted, Derecho: main or develop (shared job, cheaper in core hour)
   * `qos:` queue level, Derecho: premium, regular, or economy*
   * `check_freq:` check frequency for hofx step
+
+Derecho Core hour calculation: https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/charging/#exclusive-nodes
