@@ -1,6 +1,5 @@
 ## IODA file contents ##
-A IODA file typically has following contents:\
-Groups:
+A IODA file typically has following groups:
   - *MetaData:* dateTime, latitude, longitude
   - *ObsValue, ObsError, and PreQC:* [variableName] (e.g., aerosolOpticalDepth)
   - *hofx, EffectiveError, and EffectiveQC:* Similar to above. Normally, it will be added after running JEDI hofx appilication.
