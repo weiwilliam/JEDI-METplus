@@ -19,7 +19,10 @@ Data:
     crtm: '/data/users/swei/Git/JEDI/qxx-genint/build/crtm/test/testinput'
   output: /data/users/swei/Git/JEDI/JEDI-METplus/output
   obs_template: wxaq-VIIRS_NPP_%Y%m%d%H.nc
+  obs_window_length: 1
   bkg_template: wrfgsi.out.%Y%m%d%H/wrfout_d01_%Y%m%d_%H0000
+  bkg_extension: .nc
+  bkg_init_cyc: ['00','06','12','18']
 metplus:
   verify_fhours: [6]
   met_conf_temp: StatAnalysis.conf_tmpl
