@@ -31,7 +31,7 @@ Clone this repo recusively with the command below
 2. `export GENINT_BUILD=<path/to/build/genint>`
 3. Create virtual python env `<repo>/venv` if you do not have one.
    `source ush/setup.sh <repo path> <platform> <compiler>`
-4. `cd <path/to/build/genint>`
+4. `cd <repo>/genint-bundle/build`
 5. `ecbuild <path/to/genint-bundle>`
 6. `make -j <n>`
 7. `ctest` to check executables work properly
