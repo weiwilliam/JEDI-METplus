@@ -36,8 +36,8 @@ Clone this repo recusively with the command below
 6. `make -j <n>`
 7. `ctest` to check executables work properly
 
-## Notes for use case of WRF
-1. Preprocesses:\
+## Preprocesses for use case of WRF
+1. Create air pressure and potential temperature:\
    `ncap2 -O -s "air_pressure=PB+P;air_potential_temperature=T+300" <wrfout>`\
    Create `air_pressure` and `air_potential_temperature` for JEDI application in case the WRF specific variable changes are removed from VADER.
 2. Cropping IODA file:\
