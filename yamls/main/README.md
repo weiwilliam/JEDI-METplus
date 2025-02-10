@@ -70,6 +70,7 @@ metplus:
   * `output:` output path, will be linked to workdir/Data/output
   * `obs_template:` obs file template, will be parsed by cdate.strptime
   * `bkg_template:` bkg file template (please include any level with date info), will be parsed by cdate.strptime
+  * `bkg_init_cyc:` searching the files initialized from the listed cycles.
 * `metplus:`
   * `verify_fhours:` List of forecast hours for verification
   * `met_conf_temp:` stat_analysis template
