@@ -38,9 +38,12 @@ Clone this repo recusively with the command below
 
 ## Preprocesses for use case of WRF
 1. Create air pressure and potential temperature:\
-   `ncap2 -O -s "air_pressure=PB+P;air_potential_temperature=T+300" <wrfout>`\
-   Create `air_pressure` and `air_potential_temperature` for JEDI application in case the WRF specific variable changes are removed from VADER.
+   `ncap2 -O -s "air_potential_temperature=T+300" <wrfout>`\
+   Create `air_potential_temperature` for JEDI application in case the WRF specific variable changes are removed from VADER.   
 2. Cropping IODA file:\
    Use `pyscripts/get_wrfout_polygon.py` to create a polygon .csv file for your domain boundary.\
    Run `pyscripts/crop_iodafile.py -i <global/IODA/file> -o <WRF/domain/IODA/file> -p <WRF/domain/polygon/csv>`
+3. Use `P_HYD` to represent `air_pressure`.\
+   The `PSFC` is a diagnostic variable derived through hydrostatic function, so the `air_pressure_levels` based on akbk, ptop, and PSFC are more close to hydrostatic.
+   It may cause half level pressure from `PB+P` is not between two adjacent full level.
    
