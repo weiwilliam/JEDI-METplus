@@ -31,16 +31,19 @@ Clone this repo recusively with the command below
 2. `export GENINT_BUILD=<path/to/build/genint>`
 3. Create virtual python env `<repo>/venv` if you do not have one.
    `source ush/setup.sh <repo path> <platform> <compiler>`
-4. `cd <path/to/build/genint>`
+4. `cd <repo>/genint-bundle/build`
 5. `ecbuild <path/to/genint-bundle>`
 6. `make -j <n>`
 7. `ctest` to check executables work properly
 
-## Notes for use case of WRF
-1. Preprocesses:\
-   `ncap2 -O -s "air_pressure=PB+P;air_potential_temperature=T+300" <wrfout>`\
-   Create `air_pressure` and `air_potential_temperature` for JEDI application in case the WRF specific variable changes are removed from VADER.
+## Preprocesses for use case of WRF
+1. Create air pressure and potential temperature:\
+   `ncap2 -O -s "air_potential_temperature=T+300" <wrfout>`\
+   Create `air_potential_temperature` for JEDI application in case the WRF specific variable changes are removed from VADER.   
 2. Cropping IODA file:\
    Use `pyscripts/get_wrfout_polygon.py` to create a polygon .csv file for your domain boundary.\
    Run `pyscripts/crop_iodafile.py -i <global/IODA/file> -o <WRF/domain/IODA/file> -p <WRF/domain/polygon/csv>`
+3. Use `P_HYD` to represent `air_pressure`.\
+   The `PSFC` is a diagnostic variable derived through hydrostatic function, so the `air_pressure_levels` based on akbk, ptop, and PSFC are more close to hydrostatic.
+   It may cause half level pressure from `PB+P` is not between two adjacent full level.
    

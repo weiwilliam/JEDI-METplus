@@ -37,7 +37,7 @@ geometry:
     - mass_fraction_of_hydrophobic_black_carbon_in_air
     - mass_fraction_of_hydrophilic_black_carbon_in_air
     - sulfate_ppmv
-    - perturbation_air_potential_temperature
+    - air_potential_temperature
     - humidity_mixing_ratio_kgkg
     - mass_fraction_of_sulfate_in_air
     - humidity_mixing_ratio
@@ -52,11 +52,11 @@ geometry:
     - air_pressure_levels
     levels: 43
   - variables:
-    - surface_pressure
+    - air_pressure_at_surface
     levels: 1
   model data:
     base_air_potential_temperature: 300
-    air_pressure_at_top_of_atmosphere_model: 50
+    air_pressure_at_top_of_atmosphere_model: 5000
     sigma_pressure_hybrid_coordinate_a_coefficient: [
          0.000e+00, 5.000e-02, 2.000e-01, 4.000e-01, 7.500e-01,
          1.250e+00, 1.850e+00, 2.550e+00, 3.400e+00, 4.350e+00,
@@ -107,11 +107,11 @@ geometry:
     in file: BC2
   - in code: sulfate_ppmv
     in file: sulf
-  - in code: perturbation_air_potential_temperature
-    in file: T
   - in code: humidity_mixing_ratio_kgkg
     in file: QVAPOR
-  - in code: surface_pressure
+  - in code: air_pressure
+    in file: P_HYD
+  - in code: air_pressure_at_surface
     in file: PSFC
 state:
   state variables:
@@ -129,9 +129,10 @@ state:
   - mass_fraction_of_hydrophobic_black_carbon_in_air
   - mass_fraction_of_hydrophilic_black_carbon_in_air
   - sulfate_ppmv
-  - perturbation_air_potential_temperature
+  - air_potential_temperature
+  - air_pressure
   - humidity_mixing_ratio_kgkg
-  - surface_pressure
+  - air_pressure_at_surface
   filepath: define_every_cycle
   netcdf extension: nc
   date: define_every_cycle
