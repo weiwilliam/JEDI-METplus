@@ -18,6 +18,13 @@ set( ECBUILD_DEFAULT_BUILD_TYPE Release )
 set( ENABLE_MPI ON CACHE BOOL "Compile with MPI" )
 set( ENABLE_OMP ON CACHE BOOL "Compile with OpenMP" )
 
+# Depend path for non-ecbuild packages
+set(DEPEND_LIB_ROOT ${CMAKE_CURRENT_BINARY_DIR}/Depends)
+list(APPEND CMAKE_PREFIX_PATH ${DEPEND_LIB_ROOT})
+
+# Library path for non-ecbuild packages
+link_directories(${CMAKE_CURRENT_BINARY_DIR}/lib)
+
 # Define bundle
 ecbuild_bundle_initialize()
 
@@ -50,12 +57,8 @@ ecbuild_bundle( PROJECT ioda     GIT "https://github.com/jcsda-internal/ioda.git
 ecbuild_bundle( PROJECT ufo      GIT "https://github.com/jcsda-internal/ufo.git"         BRANCH develop UPDATE )
 
 ecbuild_bundle( PROJECT quenchxx       GIT "https://github.com/weiwilliam/quenchxx.git"       BRANCH develop UPDATE)
-ecbuild_bundle( PROJECT quenchxx_test  GIT "https://github.com/benjaminmenetrier/quenchxx_test.git"  BRANCH develop UPDATE)
-
-# ecbuild_bundle( PROJECT genint    GIT "https://github.com/jeromebarre/genint.git"          BRANCH update_wrfchem )
 
 ecbuild_bundle( PROJECT ioda-data      GIT "https://github.com/JCSDA-internal/ioda-data.git"      BRANCH develop UPDATE )
 ecbuild_bundle( PROJECT ufo-data       GIT "https://github.com/JCSDA-internal/ufo-data.git"       BRANCH develop UPDATE )
-
 
 ecbuild_bundle_finalize()

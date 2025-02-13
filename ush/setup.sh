@@ -6,11 +6,13 @@ compiler=$3
 export GENINT_BUILD=$topdir/genint-bundle/build
 modules_setup_script=$topdir/modulefiles/setup_${platform}_${compiler}.sh
 
+[[ ! -d $GENINT_BUILD ]]&&mkdir -p $GENINT_BUILD
+
 if [ -f $modules_setup_script ]; then
     echo "Load modules with $modules_setup_script"
     source $modules_setup_script
 else
-    echo "$modules_setup_script is not available for $platform and $complier"
+    echo "$modules_setup_script is not available for $platform and $compiler"
 fi
 
 if [ -s $topdir/venv/bin/activate ]; then
