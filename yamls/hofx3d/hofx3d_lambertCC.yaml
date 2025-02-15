@@ -69,8 +69,11 @@ state:
   filepath: define_every_cycle
   netcdf extension: nc
   date: define_every_cycle
-
+  check dimensions: false
 observations:
+  get values:
+    variable change:
+      vader: true
   observers:
   - obs space:
       name: define_in_mainyaml

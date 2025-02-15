@@ -27,7 +27,7 @@ geometry:
     - mass_fraction_of_sulfate_in_air
     - air_temperature
     - water_vapor_mixing_ratio_wrt_moist_air
-    - humidity_mixing_ratio
+    - water_vapor_mixing_ratio_wrt_dry_air
     - air_pressure
     - relative_humidity
     - dlsvpdT
@@ -129,8 +129,11 @@ state:
   filepath: define_every_cycle
   netcdf extension: nc4
   date: define_every_cycle
-
+  check dimensions: false
 observations:
+  get values:
+    variable change:
+      vader: true
   observers:
   - obs space:
       name: define_in_mainyaml

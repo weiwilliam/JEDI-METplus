@@ -38,9 +38,11 @@ geometry:
     - mass_fraction_of_hydrophilic_black_carbon_in_air
     - sulfate_ppmv
     - air_potential_temperature
-    - humidity_mixing_ratio_kgkg
     - mass_fraction_of_sulfate_in_air
-    - humidity_mixing_ratio
+    - water_vapor_mixing_ratio_wrt_dry_air
+    - cloud_ice_mixing_ratio_wrt_dry_air
+    - cloud_liquid_water_mixing_ratio_wrt_dry_air
+    - rain_mixing_ratio_wrt_dry_air
     - air_pressure
     - air_temperature
     - relative_humidity
@@ -107,8 +109,14 @@ geometry:
     in file: BC2
   - in code: sulfate_ppmv
     in file: sulf
-  - in code: humidity_mixing_ratio_kgkg
+  - in code: water_vapor_mixing_ratio_wrt_dry_air
     in file: QVAPOR
+  - in code: cloud_ice_mixing_ratio_wrt_dry_air
+    in file: QICE
+  - in code: cloud_liquid_water_mixing_ratio_wrt_dry_air
+    in file: QCLOUD
+  - in code: rain_mixing_ratio_wrt_dry_air
+    in file: QRAIN
   - in code: air_pressure
     in file: P_HYD
   - in code: air_pressure_at_surface
@@ -138,6 +146,9 @@ state:
   date: define_every_cycle
 
 observations:
+  get values:
+    variable change:
+      vader: true
   observers:
   - obs space:
       name: define_in_mainyaml
