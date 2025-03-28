@@ -64,7 +64,7 @@ else:
         else:
             shutil.rmtree(dir)
             os.makedirs(dir)
-    for fhr in metconf['verify_fhours']:
+    for fhr in conf['verify_fhours']:
         subfhr_hofx = os.path.join(hofxout_path, 'f%.2i'%(fhr))
         os.makedirs(subfhr_hofx)
 
@@ -110,7 +110,7 @@ if run_jedihofx:
             if genintconf['simulated_varname'] != 'aerosolOpticalDepth':
                 ret_nlev = ds.Layer.size
     
-        for fhr in metconf['verify_fhours']:
+        for fhr in conf['verify_fhours']:
             init_date = cdate - timedelta(hours=fhr)
             init_dstr = init_date.strftime('%Y%m%d%H')
             init_cyc = init_date.strftime('%H')
@@ -134,9 +134,10 @@ if run_jedihofx:
             else:
                 bkg_file = cdate.strftime(dataconf['bkg_template'])
 
-            conf_temp['state']['filepath'] = os.path.join(datapath,'input/bkg/',bkg_file)
-            if not os.path.exists(conf_temp['state']['filepath'] + dataconf['bkg_extension']):
-                print(f'{bkg_file} is not available for fcst={fhr}hr from {init_dstr}')
+            conf_temp['state']['filepath'] = f"{datapath}/input/bkg/{bkg_file}"
+            conf_temp['state']['netcdf extension'] = dataconf['bkg_extension']
+            if not os.path.exists(f"{conf_temp['state']['filepath']}.{dataconf['bkg_extension']}"):
+                print(f"{conf_temp['state']['filepath']}.{dataconf['bkg_extension']} is not available for fcst={fhr}hr from {init_dstr}")
                 continue
     
             obsoutfile = os.path.join(datapath,'output/hofx','f%.2i' %(fhr), 'hofx_%s' %(cdate.strftime(dataconf['obs_template'])))
@@ -150,7 +151,6 @@ if run_jedihofx:
                     subobs_conf['obs space']['simulated variables'] = [genintconf['simulated_varname']]
                     subobs_conf['obs operator']['nlayers_retrieval'] = ret_nlev
                     subobs_conf['obs operator']['tracer variables'] = [genintconf['tracer_name']]
-            #if 'GOMSaver' in subobs_conf['obs filter'][]
     
             with open(wrkyaml,'w') as f:
                 yaml.dump(conf_temp,f) 
@@ -158,7 +158,7 @@ if run_jedihofx:
             # Update jobcard
             job.create_job(in_jobhdr=in_jobhead, jobcard=wrkjobcard, logfile=logfile)
     
-            cmd_str = job.execcmd+' '+fullexec+' '+wrkyaml #+' 2> stderr.$$.log 1> stdout.$$.log'
+            cmd_str = job.execcmd+' '+fullexec+' '+wrkyaml 
             with open(wrkjobcard,'a') as f:
                 f.write(cmd_str)
         
@@ -187,7 +187,7 @@ if run_met_plus:
 
     # Update the StatAnalysis.conf
     leadtime_liststr = ''
-    for fhr in metconf['verify_fhours']:
+    for fhr in conf['verify_fhours']:
         fhr_hofx_dir = os.path.join(hofxout_path, 'f%.2i'%(fhr))
         if len(os.listdir(fhr_hofx_dir)) != 0:
             leadtime_liststr += str(fhr)+', '

@@ -3,7 +3,7 @@
 #PBS -A %ACCOUNT%
 #PBS -q %PARTITION%
 #PBS -l job_priority=%QOS%
-#PBS -l select=%N_NODE%:mpiprocs=%N_TASK%
+#PBS -l select=%N_NODE%:mpiprocs=%N_TASK%:mem=%MEMORY%
 #PBS -l walltime=%WALLTIME%
 #PBS -j oe
 #PBS -o %LOGFILE%

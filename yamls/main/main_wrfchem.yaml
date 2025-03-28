@@ -2,6 +2,7 @@ run_jedihofx: True
 run_met_plus: False
 restart: False
 verbose: False
+verify_fhours: [7,8,9,10,11,12,13,14,15,16,17,18,19]
 time:
   sdate: 2024082211
   edate: 2024082211
@@ -37,7 +38,6 @@ jobconf:
   check_freq: -1
   memory: '112000M'
 metplus:
-  verify_fhours: [7,8,9,10,11,12,13,14,15,16,17,18,19]
   met_conf_temp: StatAnalysis.conf_tmpl
   ioda2metmpr: ioda2metplusmpr.py 
   mask_by: 'ObsValue<1e6'

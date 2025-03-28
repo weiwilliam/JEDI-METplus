@@ -1,6 +1,8 @@
 run_jedihofx: True
 run_met_plus: True
 restart: False
+verbose: False
+verify_fhours: [0]
 time:
   sdate: 2019070106
   edate: 2019073118
@@ -22,7 +24,6 @@ Data:
   obs_template: 'viirs_npp_aod-thinned_p95.%Y%m%d%H.nc4'
   bkg_template: '%Y%m/geaer.%Y%m%d%H.atm'
 metplus:
-  verify_fhours: [0]
   met_conf_temp: StatAnalysis.conf_tmpl
   ioda2metmpr: ioda2metplusmpr.py 
   submit: True

@@ -1,0 +1,144 @@
+time window:
+  begin: define_every_cycle
+  length: PT6H
+geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_lonlat
+    nx: 576
+    ny: 361
+  halo: 1
+  latitude south to north: true
+  groups:
+  - variables:
+    - mass_fraction_of_dust001_in_air
+    - mass_fraction_of_dust002_in_air
+    - mass_fraction_of_dust003_in_air
+    - mass_fraction_of_dust004_in_air
+    - mass_fraction_of_dust005_in_air
+    - mass_fraction_of_sea_salt001_in_air
+    - mass_fraction_of_sea_salt002_in_air
+    - mass_fraction_of_sea_salt003_in_air
+    - mass_fraction_of_sea_salt004_in_air
+    - mass_fraction_of_sea_salt005_in_air
+    - mass_fraction_of_hydrophobic_organic_carbon_in_air
+    - mass_fraction_of_hydrophilic_organic_carbon_in_air
+    - mass_fraction_of_hydrophobic_black_carbon_in_air
+    - mass_fraction_of_hydrophilic_black_carbon_in_air
+    - mass_fraction_of_sulfate_in_air
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - water_vapor_mixing_ratio_wrt_dry_air
+    - air_pressure
+    - relative_humidity
+    - air_temperature
+    - air_pressure_thickness
+    levels: 72
+  - variables:
+    - air_pressure_levels
+    levels: 73
+  - variables:
+    - air_pressure_at_surface
+    levels: 1
+  model data:
+    air_pressure_at_top_of_atmosphere_model: 1
+  alias:
+  - in code: mass_fraction_of_dust001_in_air
+    in file: DU001
+  - in code: mass_fraction_of_dust002_in_air
+    in file: DU002
+  - in code: mass_fraction_of_dust003_in_air
+    in file: DU003
+  - in code: mass_fraction_of_dust004_in_air
+    in file: DU004
+  - in code: mass_fraction_of_dust005_in_air
+    in file: DU005
+  - in code: mass_fraction_of_sea_salt001_in_air
+    in file: SS001
+  - in code: mass_fraction_of_sea_salt002_in_air
+    in file: SS002
+  - in code: mass_fraction_of_sea_salt003_in_air
+    in file: SS003
+  - in code: mass_fraction_of_sea_salt004_in_air
+    in file: SS004
+  - in code: mass_fraction_of_sea_salt005_in_air
+    in file: SS005
+  - in code: mass_fraction_of_hydrophobic_organic_carbon_in_air
+    in file: OCPHOBIC
+  - in code: mass_fraction_of_hydrophilic_organic_carbon_in_air
+    in file: OCPHILIC
+  - in code: mass_fraction_of_hydrophobic_black_carbon_in_air
+    in file: BCPHOBIC
+  - in code: mass_fraction_of_hydrophilic_black_carbon_in_air
+    in file: BCPHILIC
+  - in code: mass_fraction_of_sulfate_in_air 
+    in file: SO4
+  - in code: relative_humidity
+    in file: RH
+  - in code: water_vapor_mixing_ratio_wrt_moist_air
+    in file: QV
+  - in code: air_temperature
+    in file: T
+  - in code: air_pressure
+    in file: PL
+  - in code: air_pressure_thickness
+    in file: DELP
+  - in code: air_pressure_at_surface
+    in file: PS
+
+state:
+  state variables:
+  - mass_fraction_of_dust001_in_air
+  - mass_fraction_of_dust002_in_air
+  - mass_fraction_of_dust003_in_air
+  - mass_fraction_of_dust004_in_air
+  - mass_fraction_of_dust005_in_air
+  - mass_fraction_of_sea_salt001_in_air
+  - mass_fraction_of_sea_salt002_in_air
+  - mass_fraction_of_sea_salt003_in_air
+  - mass_fraction_of_sea_salt004_in_air
+  - mass_fraction_of_sea_salt005_in_air
+  - mass_fraction_of_hydrophobic_organic_carbon_in_air
+  - mass_fraction_of_hydrophilic_organic_carbon_in_air
+  - mass_fraction_of_hydrophobic_black_carbon_in_air
+  - mass_fraction_of_hydrophilic_black_carbon_in_air
+  - mass_fraction_of_sulfate_in_air
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - relative_humidity
+  - air_temperature
+  - air_pressure
+  - air_pressure_thickness
+  - air_pressure_at_surface
+  filepath: define_every_cycle
+  netcdf extension: define_in_mainyaml
+  date: define_every_cycle
+  check dimensions: false
+observations:
+  get values:
+    variable change:
+      vader: true
+  observers:
+  - obs space:
+      name: define_in_mainyaml
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: define_every_cycle
+      obsdataout:
+        engine:
+          type: H5File
+          obsfile: define_every_cycle
+      _source: noaa
+      simulated variables: [aerosolOpticalDepth]
+      observed variables: [aerosolOpticalDepth]
+      channels: 4
+    obs operator:
+      name: AodCRTM
+      Absorbers: [H2O,O3]
+      obs options:
+        Sensor_ID: define_by_genint_obsname
+        EndianType: little_endian
+        CoefficientPath: Data/input/crtm/
+        AerosolCoeff_File: AerosolCoeff.GOCART-GEOS5.nc4
+        AerosolCoeff_Format: netCDF
+        AerosolOption: aerosols_gocart_gefs
+        model units coef: 1e9

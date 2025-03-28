@@ -15,9 +15,7 @@ module load stack-cray-mpich/8.1.25
 module load stack-python/3.11.7
 
 module load jedi-fv3-env
-module load jedi-mpas-env
 module load ewok-env
-module load soca-env
 module load metplus
 
 # See README.md
