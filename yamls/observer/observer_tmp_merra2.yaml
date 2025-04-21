@@ -1,0 +1,25 @@
+obs space:
+  name: define_by_obs_name_list_in_mainyaml
+  obsdatain:
+    engine:
+      type: H5File
+      obsfile: define_every_cycle
+  obsdataout:
+    engine:
+      type: H5File
+      obsfile: define_every_cycle
+  _source: nasa
+  simulated variables: [aerosolOpticalDepth]
+  observed variables: [aerosolOpticalDepth]
+  channels: 4
+obs operator:
+  name: AodCRTM
+  Absorbers: [H2O,O3]
+  obs options:
+    Sensor_ID: define_by_obs_sensor_list_in_mainyaml
+    EndianType: little_endian
+    CoefficientPath: Data/input/crtm/
+    AerosolCoeff_File: AerosolCoeff.GOCART-GEOS5.nc4
+    AerosolCoeff_Format: netCDF
+    AerosolOption: aerosols_gocart_gefs
+    model units coef: 1e9

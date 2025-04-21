@@ -1,28 +1,34 @@
 run_jedihofx: True
 run_met_plus: False
-restart: False
+restart: True
 verbose: False
 verify_fhours: [0]
 time:
-  sdate: 2024110106
-  edate: 2024110106
+  sdate: 2024110100
+  edate: 2024110100
   dateint: 6
 genint:
   build: /glade/work/swei/Git/JEDI-METplus/genint-bundle/build 
   jediexec: quenchxx_hofx3d.x
   jediyaml: AOD_MERRA2.yaml
-  obsname: modis_aqua
+  obsname: aodobs
   bkgname: merra2
   simulated_varname: aerosolOpticalDepth
 Data:
   input: 
-    obs: '/glade/campaign/ncar/nmmm0072/Data/obs/modis_aqua_aod'
-    bkg: '/glade/derecho/scratch/swei/Dataset/input/bkg/MERRA-2'
+    obs: '/glade/campaign/ncar/nmmm0072/Data/obs'
+    bkg: '/glade/campaign/ncar/nmmm0072/Data/MERRA-2'
     crtm: '/glade/work/swei/Git/JEDI-METplus/genint-bundle/build/crtm/test/testinput'
   output: '/glade/work/swei/Git/JEDI-METplus/output'
-  obs_template: obs.modis_aqua_aod.%Y%m%d%H.nc4
+  obs_name_list: [ # 'modis_terra_aod', 'modis_aqua_aod', 'pace_aod', 
+                  'viirs_aod_dt_npp', 'viirs_aod_dt_n20',
+                  'viirs_aod_db_npp', 'viirs_aod_db_n20']
+  obs_sensor_list: [ # 'modis_terra', 'modis_aqua', 'v.viirs-m_j2',
+                    'v.viirs-m_npp', 'v.viirs-m_j1',
+                    'v.viirs-m_npp', 'v.viirs-m_j1']
+  obs_template: '{obs_name}/{filetype}.{obs_name}.%Y%m%d%H.nc4'
   obs_window_length: 6
-  bkg_template: /%Y/%m/MERRA2_400.ufo.%Y%m%d%H
+  bkg_template: '%Y/%m/MERRA2_400.ufo.%Y%m%d%H'
   bkg_extension: nc4
   bkg_init_cyc: ['00','06','12','18']
 jobconf:
@@ -35,7 +41,7 @@ jobconf:
   partition: develop
   qos: economy
   memory: 128gb
-  check_freq: -1
+  check_freq: 120 
 metplus:
   met_conf_temp: StatAnalysis.conf_tmpl
   ioda2metmpr: ioda2metplusmpr.py 

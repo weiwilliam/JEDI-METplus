@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import sys, os
 from pathlib import Path
 import shutil
@@ -33,6 +34,7 @@ dataconf = conf['Data']
 # Create work and output folders
 casename = genintconf['obsname'] + '_' + genintconf['bkgname']
 srcpath = os.path.join(os.path.dirname(__file__), '..') 
+ymlpath = os.path.join(srcpath, 'yamls')
 wrkpath = os.path.join(srcpath, 'workdir')
 datapath =  os.path.join(wrkpath, 'Data')
 metplus_runpath = os.path.join(wrkpath, 'run_metplus')
@@ -48,10 +50,11 @@ logpath = os.path.join(srcpath, 'logs', casename)
 os.environ['runworkdir'] = wrkpath
 os.environ['runmetplusdir'] = metplus_runpath
 
-pathlist = [wrkpath, logpath, datapath, inpath, outpath,
-            metplus_runpath, statsout_path, hofxout_path,
-            gvalout_path,
-            ]
+pathlist = [
+    wrkpath, logpath, datapath, inpath, outpath,
+    metplus_runpath, statsout_path, hofxout_path,
+    gvalout_path,
+]
 
 if restart:
     for dir in pathlist:
@@ -75,6 +78,10 @@ else:
 
 os.chdir(wrkpath)
 
+if len(dataconf['obs_name_list']) != len(dataconf['obs_sensor_list']):
+    if verbose: print(dataconf['obs_name_list'], dataconf['obs_sensor_list'])
+    raise Exception('obs_name_list and obs_sensor_list are not in same size')
+
 if run_jedihofx:
    
     window_length = dataconf['obs_window_length']
@@ -95,20 +102,21 @@ if run_jedihofx:
         cdate_str3 = cdate.strftime('%Y-%m-%dT%H:%M:%SZ')
         w_beg_str = (cdate - wlnth/2).strftime('%Y-%m-%dT%H:%M:%SZ')
     
-        obsinfile = os.path.join(datapath,'input/obs',cdate.strftime(dataconf['obs_template']))
-        if not os.path.exists(obsinfile):
-            print(f'{obsinfile} not available')
-            print('')
-            continue
-    
-        ds = xr.open_dataset(obsinfile)
-        if ds.Location.size==0:
-            print('No observation available at %s' %(cdate_str1))
-            ds.close()
-            continue
-        else:
-            if genintconf['simulated_varname'] != 'aerosolOpticalDepth':
-                ret_nlev = ds.Layer.size
+        # Check observation availability
+        avail_obs_list = []
+        avail_sensor_list = []
+        obsinfile_list = []
+        for obsname, sensor in zip(dataconf['obs_name_list'], dataconf['obs_sensor_list']):
+            tmpfile = cdate.strftime(dataconf['obs_template'].format(obs_name=obsname, filetype='obs'))
+            obsinfile = f'{datapath}/input/obs/{tmpfile}'
+            if not os.path.exists(obsinfile):
+                print(f'{obsinfile} not available')
+                print(f'remove {obsname} and {sensor} at {cdate}')
+                print('')
+            else:
+                avail_obs_list.append(obsname)
+                avail_sensor_list.append(sensor)
+                obsinfile_list.append(obsinfile)
     
         for fhr in conf['verify_fhours']:
             init_date = cdate - timedelta(hours=fhr)
@@ -117,43 +125,63 @@ if run_jedihofx:
             if init_cyc not in dataconf['bkg_init_cyc']:
                 if verbose: print(f'{init_cyc} is not in bkg init cycle list')
                 continue
-            print('Processing f%.2i valid at %s' %(fhr, cdate_str1))
+            print('Processing f%.2i valid at %s' % (fhr, cdate_str1))
     
-            # execute the genint_hofx3d
+            # prepare the runtime yaml file for genint_hofx3d
             yaml_file = os.path.join(srcpath,'yamls',genintconf['jediyaml'])
-            conf_temp = yaml.load(open(yaml_file),Loader=yaml.FullLoader)
+            conf_temp = yaml.load(open(yaml_file), Loader=yaml.FullLoader)
     
-            logfile = os.path.join(logpath, 'runlog.%s_f%.2i' %(init_dstr, fhr))
+            logfile = os.path.join(logpath, 'runlog.%s_f%.2i' % (init_dstr, fhr))
     
             # Update time window and dump to working yaml
             conf_temp['time window']['begin'] = w_beg_str
             conf_temp['time window']['length'] = f'PT{window_length}H'
             conf_temp['state']['date'] = cdate_str3
-            if '{init_date}' in dataconf['bkg_template']:
-                bkg_file = cdate.strftime(dataconf['bkg_template'].format(init_date=init_dstr))
-            else:
-                bkg_file = cdate.strftime(dataconf['bkg_template'])
+
+            # Fill {init_date} in bkg_template
+            bkg_file = cdate.strftime(dataconf['bkg_template'].format(init_date=init_dstr))
 
             conf_temp['state']['filepath'] = f"{datapath}/input/bkg/{bkg_file}"
             conf_temp['state']['netcdf extension'] = dataconf['bkg_extension']
             if not os.path.exists(f"{conf_temp['state']['filepath']}.{dataconf['bkg_extension']}"):
                 print(f"{conf_temp['state']['filepath']}.{dataconf['bkg_extension']} is not available for fcst={fhr}hr from {init_dstr}")
                 continue
-    
-            obsoutfile = os.path.join(datapath,'output/hofx','f%.2i' %(fhr), 'hofx_%s' %(cdate.strftime(dataconf['obs_template'])))
-            for subobs_conf in conf_temp['observations']['observers']:
-                subobs_conf['obs space']['name'] = genintconf['simulated_varname']
+
+            # Append observer section for each observation,
+            observer_yaml_tmpl = f"{ymlpath}/{conf_temp['observations']['observers']}"
+            hofx_list = [] 
+            obsvr_list = []
+            for obsname, sensor, obsinfile in zip(avail_obs_list, avail_sensor_list, obsinfile_list):
+                ds = xr.open_dataset(obsinfile)
+                if ds.Location.size==0:
+                    print(f'No observation available at {cdate_str1}')
+                else:
+                    if genintconf['simulated_varname'] != 'aerosolOpticalDepth':
+                        ret_nlev = ds.Layer.size
+                ds.close()
+
+                hofxoutdir = f'{hofxout_path}/f{fhr:02}/{obsname}'
+                if not os.path.exists(hofxoutdir): os.makedirs(hofxoutdir)
+                hofxout = cdate.strftime(dataconf['obs_template'].format(obs_name=obsname, filetype='hofx'))
+                obsoutfile = f'{hofxout_path}/f{fhr:02}/{hofxout}'
+                hofx_list.append(obsoutfile)
+
+                subobs_conf = yaml.load(open(observer_yaml_tmpl), Loader=yaml.FullLoader)
+                subobs_conf['obs space']['name'] = f"{obsname}_{genintconf['simulated_varname']}"
                 subobs_conf['obs space']['obsdatain']['engine']['obsfile'] = obsinfile
                 subobs_conf['obs space']['obsdataout']['engine']['obsfile'] = obsoutfile
                 if genintconf['simulated_varname'] == 'aerosolOpticalDepth':
-                    subobs_conf['obs operator']['obs options']['Sensor_ID'] = genintconf['obsname'] 
+                    subobs_conf['obs operator']['obs options']['Sensor_ID'] = sensor
                 else:
                     subobs_conf['obs space']['simulated variables'] = [genintconf['simulated_varname']]
                     subobs_conf['obs operator']['nlayers_retrieval'] = ret_nlev
                     subobs_conf['obs operator']['tracer variables'] = [genintconf['tracer_name']]
+
+                obsvr_list.append(subobs_conf)
+            conf_temp['observations']['observers'] = obsvr_list
     
             with open(wrkyaml,'w') as f:
-                yaml.dump(conf_temp,f) 
+                yaml.dump(conf_temp, f, sort_keys=False) 
     
             # Update jobcard
             job.create_job(in_jobhdr=in_jobhead, jobcard=wrkjobcard, logfile=logfile)
@@ -164,18 +192,19 @@ if run_jedihofx:
         
             output = job.submit(wrkjobcard)
             jobid = output.split()[-1]
-            if jobconf['platform']=='derecho': time.sleep(15)
             if jobconf['check_freq'] != -1:
+                if jobconf['platform']=='derecho':
+                    pre_sleep_sec = int(jobconf['check_freq']/2)
+                    time.sleep(pre_sleep_sec)
                 status = 0
                 while status == 0:
                     status = job.check(jobid)
                     if status == 0: time.sleep(jobconf['check_freq'])
     
             # Check the outputs
-            hofx_file = subobs_conf['obs space']['obsdataout']['engine']['obsfile']
-            if not os.path.exists(hofx_file):
-                print(hofx_file+' does not exist')
-                continue
+            for hofx_file in hofx_list:
+                if not os.path.exists(hofx_file):
+                    print(f'Warning: {cdate}, {hofx_file} does not exist')
 
 if run_met_plus:
     print(f"run METplus for {timeconf['sdate']} to {timeconf['edate']}")
