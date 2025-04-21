@@ -11,7 +11,8 @@ Clone this repo recusively with the command below
 
 ## Supported (Tested) models 
 * Lambert CC projection: WRF-Chem
-* Reducing Gaussian Lat-Lon (GEFS-Aerosols)
+* Reducing Gaussian Lon-Lat: GEFS-Aerosols
+* Regular Lon-Lat: MERRA-2
 
 ## Supported (Tested) measurements
 * TropOMI NO2 and CO
