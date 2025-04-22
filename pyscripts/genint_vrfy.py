@@ -32,7 +32,7 @@ genintconf = conf['genint']
 dataconf = conf['Data']
 
 # Create work and output folders
-casename = genintconf['obsname'] + '_' + genintconf['bkgname']
+casename = genintconf['casename']
 srcpath = os.path.join(os.path.dirname(__file__), '..') 
 ymlpath = os.path.join(srcpath, 'yamls')
 wrkpath = os.path.join(srcpath, 'workdir')
@@ -102,7 +102,7 @@ if run_jedihofx:
         cdate_str3 = cdate.strftime('%Y-%m-%dT%H:%M:%SZ')
         w_beg_str = (cdate - wlnth/2).strftime('%Y-%m-%dT%H:%M:%SZ')
     
-        # Check observation availability
+        # Check observation availability and create the list
         avail_obs_list = []
         avail_sensor_list = []
         obsinfile_list = []
@@ -128,7 +128,7 @@ if run_jedihofx:
             print('Processing f%.2i valid at %s' % (fhr, cdate_str1))
     
             # prepare the runtime yaml file for genint_hofx3d
-            yaml_file = os.path.join(srcpath,'yamls',genintconf['jediyaml'])
+            yaml_file = os.path.join(ymlpath, genintconf['jediyaml'])
             conf_temp = yaml.load(open(yaml_file), Loader=yaml.FullLoader)
     
             logfile = os.path.join(logpath, 'runlog.%s_f%.2i' % (init_dstr, fhr))
@@ -180,14 +180,14 @@ if run_jedihofx:
                 obsvr_list.append(subobs_conf)
             conf_temp['observations']['observers'] = obsvr_list
     
-            with open(wrkyaml,'w') as f:
+            with open(wrkyaml, 'w') as f:
                 yaml.dump(conf_temp, f, sort_keys=False) 
     
             # Update jobcard
             job.create_job(in_jobhdr=in_jobhead, jobcard=wrkjobcard, logfile=logfile)
     
             cmd_str = job.execcmd+' '+fullexec+' '+wrkyaml 
-            with open(wrkjobcard,'a') as f:
+            with open(wrkjobcard, 'a') as f:
                 f.write(cmd_str)
         
             output = job.submit(wrkjobcard)
@@ -210,8 +210,8 @@ if run_met_plus:
     print(f"run METplus for {timeconf['sdate']} to {timeconf['edate']}")
     
     # Setup METplus related variables
-    in_statanalysis_conf = os.path.join(srcpath,'etc',metconf['met_conf_temp'])
-    wk_statanalysis_conf = os.path.join(wrkpath,'statanalysis.conf')
+    in_statanalysis_conf = os.path.join(srcpath, 'etc', metconf['met_conf_temp'])
+    wk_statanalysis_conf = os.path.join(wrkpath, 'statanalysis.conf')
     embedded_py = os.path.join(srcpath, 'pyscripts', metconf['ioda2metmpr'])
 
     # Update the StatAnalysis.conf
@@ -221,9 +221,9 @@ if run_met_plus:
         if len(os.listdir(fhr_hofx_dir)) != 0:
             leadtime_liststr += str(fhr)+', '
     
-    py_input = '%s/f{lead_hour}/hofx_%s' %(hofxout_path, dataconf['obs_template'].replace('%Y%m%d%H','{valid?fmt=%Y%m%d%H}'))
+    py_input = '%s/f{lead_hour}/hofx_%s' %(hofxout_path, dataconf['obs_template'].replace('%Y%m%d%H', '{valid?fmt=%Y%m%d%H}'))
     
-    with open(in_statanalysis_conf,'r') as file:
+    with open(in_statanalysis_conf, 'r') as file:
         tmp_mp_confs = file.read()
     mp_confs = tmp_mp_confs.replace('@INPUT_BASE@', wrkpath)
     mp_confs = mp_confs.replace('@OUTPUT_BASE@', metplus_runpath )

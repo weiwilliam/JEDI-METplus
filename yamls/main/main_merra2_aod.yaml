@@ -1,6 +1,6 @@
 run_jedihofx: True
 run_met_plus: False
-restart: True
+restart: False
 verbose: False
 verify_fhours: [0]
 time:
@@ -11,8 +11,7 @@ genint:
   build: /glade/work/swei/Git/JEDI-METplus/genint-bundle/build 
   jediexec: quenchxx_hofx3d.x
   jediyaml: AOD_MERRA2.yaml
-  obsname: aodobs
-  bkgname: merra2
+  casename: aodobs_merra2_test
   simulated_varname: aerosolOpticalDepth
 Data:
   input: 
@@ -20,10 +19,10 @@ Data:
     bkg: '/glade/campaign/ncar/nmmm0072/Data/MERRA-2'
     crtm: '/glade/work/swei/Git/JEDI-METplus/genint-bundle/build/crtm/test/testinput'
   output: '/glade/work/swei/Git/JEDI-METplus/output'
-  obs_name_list: [ # 'modis_terra_aod', 'modis_aqua_aod', 'pace_aod', 
+  obs_name_list: ['modis_terra_aod', 'modis_aqua_aod', 'pace_aod', 
                   'viirs_aod_dt_npp', 'viirs_aod_dt_n20',
                   'viirs_aod_db_npp', 'viirs_aod_db_n20']
-  obs_sensor_list: [ # 'modis_terra', 'modis_aqua', 'v.viirs-m_j2',
+  obs_sensor_list: ['modis_terra', 'modis_aqua', 'v.viirs-m_j2',
                     'v.viirs-m_npp', 'v.viirs-m_j1',
                     'v.viirs-m_npp', 'v.viirs-m_j1']
   obs_template: '{obs_name}/{filetype}.{obs_name}.%Y%m%d%H.nc4'
