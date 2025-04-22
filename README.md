@@ -47,4 +47,6 @@ Clone this repo recusively with the command below
 3. Use `P_HYD` to represent `air_pressure`.\
    The `PSFC` is a diagnostic variable derived through hydrostatic function, so the `air_pressure_levels` based on akbk, ptop, and PSFC are more close to hydrostatic.
    It may cause half level pressure from `PB+P` is not between two adjacent full level.
-   
+
+## Reference links
+UFO operators: [JEDI document/UFO](https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/inside/jedi-components/ufo/index.html)
