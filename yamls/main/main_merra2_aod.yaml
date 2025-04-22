@@ -10,8 +10,8 @@ time:
 genint:
   build: /glade/work/swei/Git/JEDI-METplus/genint-bundle/build 
   jediexec: quenchxx_hofx3d.x
-  jediyaml: AOD_MERRA2.yaml
-  casename: aodobs_merra2_test
+  jediyaml: hofx3d/AOD_MERRA2.yaml
+  casename: aodobs_merra2
   simulated_varname: aerosolOpticalDepth
 Data:
   input: 
@@ -29,7 +29,7 @@ Data:
   obs_window_length: 6
   bkg_template: '%Y/%m/MERRA2_400.ufo.%Y%m%d%H'
   bkg_extension: nc4
-  bkg_init_cyc: ['00','06','12','18']
+  bkg_init_cyc: ['00', '06', '12', '18']
 jobconf:
   platform: derecho
   jobname: qxxgenint_merra2
