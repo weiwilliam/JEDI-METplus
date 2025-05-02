@@ -22,4 +22,7 @@ obs operator:
     AerosolCoeff_File: AerosolCoeff.GOCART-GEOS5.nc4
     AerosolCoeff_Format: netCDF
     AerosolOption: aerosols_gocart_gefs
-    model units coef: 1e9
+    model units coeff: 1e9
+#obs filters:
+#  - filter: GOMsaver
+#    filename: define_every_cycle

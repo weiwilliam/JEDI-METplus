@@ -87,7 +87,7 @@ class setup_job(object):
         elif self.platform in ['orion', 'discover']:
             self.execcmd = which('mpirun')
         elif self.platform == 'derecho':
-            self.execcmd = which('mpiexec')+' -n %s -ppn %s' % (self.n_node,str(self.n_task / self.n_node))
+            self.execcmd = which('mpiexec')+' -n %s -ppn %s' % (self.n_task, str(int(self.n_task / self.n_node)))
      
     def create_job(self, **args):
         with open(args['in_jobhdr'], 'r') as file:
@@ -99,6 +99,7 @@ class setup_job(object):
         new_content = new_content.replace('%QOS%', self.qos)
         new_content = new_content.replace('%N_NODE%', str(self.n_node))
         new_content = new_content.replace('%N_TASK%', str(self.n_task))
+        new_content = new_content.replace('%ppn%', str(int(self.n_task / self.n_node)))
         new_content = new_content.replace('%LOGFILE%', args['logfile'])
         new_content = new_content.replace('%MEMORY%', str(self.memory))
         with open(args['jobcard'], 'w') as file:

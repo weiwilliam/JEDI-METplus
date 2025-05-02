@@ -1,0 +1,20 @@
+obs space:
+  name: define_in_mainyaml
+  obsdatain:
+    engine:
+      type: H5File
+      obsfile: define_every_cycle
+  obsdataout:
+    engine:
+      type: H5File
+      obsfile: define_every_cycle
+  simulated variables: define_in_mainyaml
+  _source: nasa
+obs operator:
+  model units coeff: 1E-6
+  name: ColumnRetrieval
+  nlayers_retrieval: define_based_on_obsfile
+  tracer variables: define_in_mainyaml
+  isApriori: false
+  isAveragingKernel: true
+  stretchVertices: topbottom 

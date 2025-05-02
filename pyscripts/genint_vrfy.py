@@ -95,7 +95,8 @@ if run_jedihofx:
     fullexec = os.path.join(genintconf['build'], 'bin', genintconf['jediexec'])
     wrkjobcard = os.path.join(wrkpath, 'runscript')
     wrkyaml = os.path.join(wrkpath, 'running.yaml')
-    
+
+    # Loop through valid dates
     for cdate in dates:
         cdate_str1 = cdate.strftime('%Y%m%d%H')
         cdate_str2 = cdate.strftime('%Y%m%d_%H%M%S')
@@ -117,7 +118,8 @@ if run_jedihofx:
                 avail_obs_list.append(obsname)
                 avail_sensor_list.append(sensor)
                 obsinfile_list.append(obsinfile)
-    
+
+        # Loop through verification forecast hours
         for fhr in conf['verify_fhours']:
             init_date = cdate - timedelta(hours=fhr)
             init_dstr = init_date.strftime('%Y%m%d%H')
@@ -132,6 +134,7 @@ if run_jedihofx:
             conf_temp = yaml.load(open(yaml_file), Loader=yaml.FullLoader)
     
             logfile = os.path.join(logpath, 'runlog.%s_f%.2i' % (init_dstr, fhr))
+            if os.path.exists(logfile): os.remove(logfile)
     
             # Update time window and dump to working yaml
             conf_temp['time window']['begin'] = w_beg_str
@@ -176,13 +179,21 @@ if run_jedihofx:
                     subobs_conf['obs space']['simulated variables'] = [genintconf['simulated_varname']]
                     subobs_conf['obs operator']['nlayers_retrieval'] = ret_nlev
                     subobs_conf['obs operator']['tracer variables'] = [genintconf['tracer_name']]
+                if 'obs filters' in subobs_conf:
+                    for filterconf in subobs_conf['obs filters']:
+                        if filterconf['filter']=='GOMsaver':
+                            gvaloutdir = f'{gvalout_path}/f{fhr:02}/{obsname}'
+                            if not os.path.exists(gvaloutdir): os.makedirs(gvaloutdir)
+                            gvalout = cdate.strftime(dataconf['obs_template'].format(obs_name=obsname, filetype='geovals'))
+                            gvaloutfile = f'{gvalout_path}/f{fhr:02}/{gvalout}'
+                            filterconf['filename'] = gvaloutfile
 
                 obsvr_list.append(subobs_conf)
             conf_temp['observations']['observers'] = obsvr_list
     
             with open(wrkyaml, 'w') as f:
                 yaml.dump(conf_temp, f, sort_keys=False) 
-    
+
             # Update jobcard
             job.create_job(in_jobhdr=in_jobhead, jobcard=wrkjobcard, logfile=logfile)
     

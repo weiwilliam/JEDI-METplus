@@ -4,39 +4,40 @@ restart: False
 verbose: False
 verify_fhours: [7,8,9,10,11,12,13,14,15,16,17,18,19]
 time:
-  sdate: 2024082211
-  edate: 2024082211
+  sdate: 2024082213
+  edate: 2024082213
   dateint: 1 
 genint:
-  build: /work2/noaa/jcsda/shihwei/git/JEDI-METplus/genint-bundle/build 
+  build: /glade/work/swei/Git/JEDI-METplus/genint-bundle/build 
   jediexec: quenchxx_hofx3d.x
-  jediyaml: hofx3d_lambertCC.yaml
-  obsname: tempo_no2_tropo
-  bkgname: wrfchem
+  jediyaml: hofx3d/hofx3d_lambertCC.yaml
+  casename: tempo_no2_tropo_wrfchem
   simulated_varname: nitrogendioxideColumn
   tracer_name: volume_mixing_ratio_of_no2
 Data:
   input: 
-    obs: '/work2/noaa/jcsda/shihwei/data/jedi-data/input/obs/tempo_no2_tropo-wxaq'
-    bkg: '/work2/noaa/jcsda/shihwei/data/jedi-data/input/bkg/wxaq'
-    crtm: '/work2/noaa/jcsda/shihwei/data/crtm_fix'
-  output: /work2/noaa/jcsda/shihwei/git/JEDI-METplus/output
-  obs_template: obs.tempo_no2_tropo-wxaq.%Y%m%d%H.nc4
+    obs: '/glade/derecho/scratch/swei/Dataset/input/obs'
+    bkg: '/glade/derecho/scratch/swei/Dataset/input/bkg/wxaq'
+    crtm: '/glade/work/swei/Git/JEDI-METplus/genint-bundle/build/crtm/test/testinput'
+  output: '/glade/work/swei/Git/JEDI-METplus/output'
+  obs_name_list: ['tempo_no2_tropo-wxaq']
+  obs_sensor_list: ['tempo']
+  obs_template: '{obs_name}/{filetype}.{obs_name}.%Y%m%d%H.nc4'
   obs_window_length: 1
   bkg_template: wrfgsi.out.{init_date}/subset_wrfout_d01_%Y%m%d_%H0000
-  bkg_extension: .nc
+  bkg_extension: nc
   bkg_init_cyc: ['00']
 jobconf:
-  platform: orion
+  platform: derecho
   jobname: qxxgenint_wrfchem
   n_node: 1
-  n_task: 1
-  account: da-cpu
-  partition: orion
+  n_task: 6
+  account: ualb0028
+  partition: develop
   walltime: 0:30:00
-  qos: batch
+  qos: economy
   check_freq: -1
-  memory: '112000M'
+  memory: 128gb
 metplus:
   met_conf_temp: StatAnalysis.conf_tmpl
   ioda2metmpr: ioda2metplusmpr.py 

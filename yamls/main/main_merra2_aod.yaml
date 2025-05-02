@@ -1,11 +1,11 @@
 run_jedihofx: True
 run_met_plus: False
-restart: False
+restart: True
 verbose: False
 verify_fhours: [0]
 time:
-  sdate: 2024110100
-  edate: 2024110100
+  sdate: 2024110106
+  edate: 2024113018
   dateint: 6
 genint:
   build: /glade/work/swei/Git/JEDI-METplus/genint-bundle/build 
@@ -19,7 +19,7 @@ Data:
     bkg: '/glade/campaign/ncar/nmmm0072/Data/MERRA-2'
     crtm: '/glade/work/swei/Git/JEDI-METplus/genint-bundle/build/crtm/test/testinput'
   output: '/glade/work/swei/Git/JEDI-METplus/output'
-  obs_name_list: ['modis_terra_aod', 'modis_aqua_aod', 'pace_aod', 
+  obs_name_list: ['modis_terra_aod', 'modis_aqua_aod', 'pace_aod',
                   'viirs_aod_dt_npp', 'viirs_aod_dt_n20',
                   'viirs_aod_db_npp', 'viirs_aod_db_n20']
   obs_sensor_list: ['modis_terra', 'modis_aqua', 'v.viirs-m_j2',
@@ -34,13 +34,13 @@ jobconf:
   platform: derecho
   jobname: qxxgenint_merra2
   n_node: 1
-  n_task: 6
+  n_task: 12
   walltime: '0:30:00'
   account: nmmm0072
-  partition: develop
+  partition: main
   qos: economy
-  memory: 128gb
-  check_freq: 120 
+  memory: 235gb # 235gb maximum
+  check_freq: 500
 metplus:
   met_conf_temp: StatAnalysis.conf_tmpl
   ioda2metmpr: ioda2metplusmpr.py 

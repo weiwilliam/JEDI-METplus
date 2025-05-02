@@ -3,7 +3,7 @@
 #PBS -A %ACCOUNT%
 #PBS -q %PARTITION%
 #PBS -l job_priority=%QOS%
-#PBS -l select=%N_NODE%:mpiprocs=%N_TASK%:mem=%MEMORY%
+#PBS -l select=%N_NODE%:ncpus=%ppn%:mpiprocs=%ppn%:mem=%MEMORY%
 #PBS -l walltime=%WALLTIME%
 #PBS -j oe
 #PBS -o %LOGFILE%
@@ -12,3 +12,6 @@
 export HDF5_USE_FILE_LOCKING=FALSE
 ulimit -s unlimited || true
 ulimit -v unlimited || true
+
+export VALIDATE_PARAMETERS=1
+
