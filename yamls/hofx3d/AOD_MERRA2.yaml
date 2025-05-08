@@ -7,6 +7,10 @@ geometry:
     type: regular_lonlat
     nx: 576
     ny: 361
+    domain :
+      type : "global"
+      units : "degrees"
+      west: -180.
   halo: 1
   latitude south to north: true
   groups:

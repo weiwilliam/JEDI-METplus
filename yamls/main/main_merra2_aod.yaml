@@ -4,7 +4,7 @@ restart: True
 verbose: False
 verify_fhours: [0]
 time:
-  sdate: 2024110106
+  sdate: 2024110500
   edate: 2024113018
   dateint: 6
 genint:
@@ -34,13 +34,13 @@ jobconf:
   platform: derecho
   jobname: qxxgenint_merra2
   n_node: 1
-  n_task: 12
-  walltime: '0:30:00'
+  n_task: 128
+  walltime: '0:10:00'
   account: nmmm0072
   partition: main
   qos: economy
   memory: 235gb # 235gb maximum
-  check_freq: 500
+  check_freq: 120
 metplus:
   met_conf_temp: StatAnalysis.conf_tmpl
   ioda2metmpr: ioda2metplusmpr.py 
