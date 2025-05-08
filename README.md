@@ -7,7 +7,7 @@ Clone this repo recusively with the command below
 
 ## Supported platforms
 * Platforms with JCSDA spack-stack package.
-* Module loading scripts: derecho_intel.
+* Module loading scripts: derecho_intel (v1.8.0) and derecho_gnu (v1.9.1)
 
 ## Supported (Tested) models 
 * Lambert CC projection: WRF-Chem
@@ -16,31 +16,35 @@ Clone this repo recusively with the command below
 
 ## Supported (Tested) measurements
 * TropOMI NO2 and CO
-* VIIRS AOD
+* AOD from MODIS, VIIRS, and OCI (PACE)
 * TEMPO NO2, CO
 
 ## Use of this interface
 * Prerequisites: observation files in IODA format and model outputs in NetCDF (GRIB2 may be supported later).
 1. Create Python venv under your repo, `source ush/setup.sh </repo/path> <platform> <compiler>`
-2. Based on your application, copy a main yaml file from yamls/main and a hofx3d yaml file from yamls/hofx3d.
-   <e.g., evaluate wrf-chem trace gas, copy `main/main_wrfchem.yaml` and `hofx3d/hofx3d_lambertCC.yaml`>
-3. Update the main and hofx3d yaml files as needed. Check README.md under `yamls/<main/hofx3d>` for details.
+2. Based on your application, update the main yaml file under yamls/main and the hofx3d yaml file from yamls/hofx3d.
+   <e.g., evaluate wrf-chem trace gas, use `main/main_wrfchem.yaml` and `hofx3d/hofx3d_lambertCC.yaml`>
+3. Update the main and hofx3d yaml files as needed. Check README.md under `yamls/<main, hofx3d>` for details.
 4. Execute `pyscripts/genint_vrfy.py <main yaml>`
 
 ## Build generic interface (genint-bundle)
 1. Create the `<repo>/genint-bundle/build` folder
-2. `export GENINT_BUILD=<path/to/build/genint>`
-3. Create virtual python env `<repo>/venv` if you do not have one.
+2. Create virtual python env `<repo>/venv` if you do not have one.
    `source ush/setup.sh <repo path> <platform> <compiler>`
-4. `cd <repo>/genint-bundle/build`
-5. `ecbuild <path/to/genint-bundle>`
-6. `make -j <n>`
-7. `ctest` to check executables work properly
+3. `cd <repo>/genint-bundle/build`
+4. `ecbuild <path/to/genint-bundle>`
+5. `make -j <n>`
+6. `ctest` to check executables work properly
+
+## Using existing build on Derecho
+`/glade/work/swei/Git/JEDI-METplus/genint-bundle/build`  
+1. Update `GENINT_BUILD` to `/glade/work/swei/Git/JEDI-METplus/genint-bundle/build`
+2. `source ush/setup.sh <your repo path> derecho gnu`
 
 ## Preprocesses for use case of WRF
 1. Create air pressure and potential temperature:\
    `ncap2 -O -s "air_potential_temperature=T+300" <wrfout>`\
-   Create `air_potential_temperature` for JEDI application in case the WRF specific variable changes are removed from VADER.   
+   Create `air_potential_temperature` for JEDI application.   
 2. Cropping IODA file:\
    Use `pyscripts/get_wrfout_polygon.py` to create a polygon .csv file for your domain boundary.\
    Run `pyscripts/crop_iodafile.py -i <global/IODA/file> -o <WRF/domain/IODA/file> -p <WRF/domain/polygon/csv>`
