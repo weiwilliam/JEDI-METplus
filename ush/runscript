@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# This is used to run hofx application on interactive/allocated job.
+# Usage: 
+#     1. after run genint_vrfy.py <main_yaml>, copy workdir/running.yaml to yaml_template
+#     2. change the YAML keys, 'begin' to '%beginTime%', 'date' to '%cdateTime%'
+#     3. change all time tags to '%cdate%' in model and obs files
+#     4. Run this script.
+#  
+
+
+export HDF5_USE_FILE_LOCKING=FALSE
+ulimit -s unlimited || true
+ulimit -v unlimited || true
+
+export VALIDATE_PARAMETERS=1
+
+func_ndate (){
+    hrinc=$1
+    syear=${2:0:4}
+    smon=${2:4:2}
+    sday=${2:6:2}
+    shr=${2:8:2}
+
+    datein=`date -u --date="$smon/$sday/$syear $shr:00:00"`
+    dateout=`date +%Y%m%d%H -u -d "$datein $hrinc hours"`
+    echo $dateout
+}
+
+# TODO: Add section to create the YAML template based on the main YAML.
+#       A python function can be called by pyscript/genint_vrfy.py
+
+hofx3d=/glade/work/swei/Git/JEDI-METplus/genint-bundle/build/bin/quenchxx_hofx3d.x
+
+sdate=2024110112
+edate=2024113018
+hint=6
+
+cdate=$sdate
+until [ $cdate -gt $edate ]; do
+    bdate=`func_ndate -$((hint/2)) $cdate`
+    beginTime="${bdate:0:4}-${bdate:4:2}-${bdate:6:2}T${bdate:8:2}:00:00Z"
+    cdateTime="${cdate:0:4}-${cdate:4:2}-${cdate:6:2}T${cdate:8:2}:00:00Z"
+    echo $cdate $beginTime $cdateTime
+
+    cat ./yaml_template \
+        | sed "s/%cdate%/$cdate/g" \
+        | sed "s/%cdateTime%/$cdateTime/g" \
+        | sed "s/%beginTime%/$beginTime/g" \
+        > $workdir/running.yaml
+    logfile=/glade/work/swei/Git/JEDI-METplus/./pyscripts/../logs/aodobs_merra2/runlog.${cdate}_f00
+    cdate=`func_ndate $hint $cdate`
+    
+    /opt/cray/pe/pals/1.2.11/bin/mpiexec -n 32 -ppn 32 $hofx3d /glade/work/swei/Git/JEDI-METplus/./pyscripts/../workdir/running.yaml > $logfile
+done

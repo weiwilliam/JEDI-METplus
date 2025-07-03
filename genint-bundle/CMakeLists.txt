@@ -54,7 +54,8 @@ ecbuild_bundle( PROJECT saber    GIT "https://github.com/jcsda-internal/saber.gi
 ecbuild_bundle( PROJECT crtm     GIT "https://github.com/JCSDA/CRTMv3.git"               BRANCH develop UPDATE )
 ecbuild_bundle( PROJECT gsw      GIT "https://github.com/jcsda-internal/GSW-Fortran.git" BRANCH develop UPDATE )
 ecbuild_bundle( PROJECT ioda     GIT "https://github.com/jcsda-internal/ioda.git"        BRANCH develop UPDATE )
-ecbuild_bundle( PROJECT ufo      GIT "https://github.com/jcsda-internal/ufo.git"         BRANCH develop UPDATE )
+ecbuild_bundle( PROJECT ufo      GIT "https://github.com/jcsda-internal/ufo.git"         BRANCH feature/SpcTauCoeff_Format) 
+# develop UPDATE )
 
 ecbuild_bundle( PROJECT quenchxx       GIT "https://github.com/weiwilliam/quenchxx.git"       BRANCH develop UPDATE)
 

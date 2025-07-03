@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
+import sys
 import netCDF4 as nc
 import pandas as pd
 
+wrffile = sys.argv[1]
+latvar = sys.argv[2]
+lonvar = sys.argv[3]
+
 wrfout = './wrfout_d01_20240117_180000.nc'
 
-ncd = nc.Dataset(wrfout, 'r')
+ncd = nc.Dataset(wrffile, 'r')
 
-lat = ncd.variables['XLAT'][:].data
-lon = ncd.variables['XLONG'][:].data
+lat = ncd.variables[latvar][:].data
+lon = ncd.variables[lonvar][:].data
 
 if lat.ndim==3:
    lat = lat[0,:,:]
