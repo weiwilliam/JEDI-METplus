@@ -10,7 +10,7 @@ time:
 genint:
   build: /glade/work/swei/Git/JEDI-METplus/genint-bundle/build 
   jediexec: quenchxx_hofx3d.x
-  jediyaml: hofx3d/hofx3d_lambertCC.yaml
+  jediyaml: hofx3d/TraceGas_WRFChem.yaml
   casename: tropomi_no2_tropo_wrfchem
   simulated_varname: nitrogendioxideColumn
   tracer_name: volume_mixing_ratio_of_no2

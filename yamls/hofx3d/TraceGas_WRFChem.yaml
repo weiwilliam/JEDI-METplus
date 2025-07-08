@@ -10,14 +10,24 @@ geometry:
     ny : 198
     dx : 4000.0
     dy : 4000.0
-    lonlat(centre) : [-75.1618,42.90771]
-    projection :
-        type : "lambert_conformal_conic"
-        longitude0 : -97.0
-        latitude0 : 39.0
-        latitude1  : 30.0
-        latitude2  : 60.0
-        radius: 6370000
+    lonlat(centre):
+    - -75.95349
+    - 42.7153
+    projection:
+      type: lambert_conformal_conic
+      longitude0: -97.0
+      latitude0: 40.0
+      latitude1: 33.0
+      latitude2: 45.0
+      radius: 6370000
+#    lonlat(centre) : [-75.1618,42.90771]
+#    projection :
+#        type : "lambert_conformal_conic"
+#        longitude0 : -97.0
+#        latitude0 : 39.0
+#        latitude1  : 30.0
+#        latitude2  : 60.0
+#        radius: 6370000
   levels are top down: false
 
   groups:
@@ -59,15 +69,12 @@ geometry:
     in file: no2
   - in code: volume_mixing_ratio_of_co
     in file: co
-  - in code: air_pressure
-    in file: P_HYD
   - in code: air_pressure_at_surface
     in file: PSFC
 state:
   state variables:
   - volume_mixing_ratio_of_no2
   - volume_mixing_ratio_of_co
-  - air_pressure
   - air_pressure_at_surface
   filepath: define_every_cycle
   netcdf extension: nc
