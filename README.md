@@ -43,7 +43,7 @@ Clone this repo recusively with the command below
 
 ## Preprocesses for use case of WRF
 1. Create air pressure and potential temperature:\
-   `ncap2 -O -s "air_potential_temperature=T+300" <wrfout>`\
+   `ncap2 -O -s "air_potential_temperature=T+300" <wrfout> <new wrfout>`\
    Create `air_potential_temperature` for JEDI application.   
 2. Cropping IODA file:\
    Use `pyscripts/get_wrfout_polygon.py` to create a polygon .csv file for your domain boundary.\

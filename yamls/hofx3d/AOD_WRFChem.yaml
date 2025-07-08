@@ -10,16 +10,26 @@ geometry:
     ny : 198
     dx : 4000.0
     dy : 4000.0
-    lonlat(centre) : [-75.1618,42.90771]
-    #lonlat(xmin,ymin): [-81.634705,38.214104]
-    projection :
-        type : "lambert_conformal_conic"
-        longitude0 : -97.0
-        latitude0 : 39.0
-        latitude1  : 30.0
-        latitude2  : 60.0
-        radius: 6370000
+    lonlat(centre):
+    - -75.95349
+    - 42.7153
+    projection:
+      type: lambert_conformal_conic
+      longitude0: -97.0
+      latitude0: 40.0
+      latitude1: 33.0
+      latitude2: 45.0
+      radius: 6370000
   levels are top down: false
+#    lonlat(centre) : [-75.1618,42.90771]
+#    projection :
+#        type : "lambert_conformal_conic"
+#        longitude0 : -97.0
+#        latitude0 : 39.0
+#        latitude1  : 30.0
+#        latitude2  : 60.0
+#        radius: 6370000
+#  levels are top down: false
 
   groups:
   - variables:
@@ -57,7 +67,6 @@ geometry:
     - air_pressure_at_surface
     levels: 1
   model data:
-    base_air_potential_temperature: 300
     air_pressure_at_top_of_atmosphere_model: 5000
     sigma_pressure_hybrid_coordinate_a_coefficient: [
          0.000e+00, 5.000e-02, 2.000e-01, 4.000e-01, 7.500e-01,
@@ -138,52 +147,18 @@ state:
   - mass_fraction_of_hydrophilic_black_carbon_in_air
   - sulfate_ppmv
   - air_potential_temperature
+  - water_vapor_mixing_ratio_wrt_dry_air
+  - cloud_ice_mixing_ratio_wrt_dry_air
+  - cloud_liquid_water_mixing_ratio_wrt_dry_air
+  - rain_mixing_ratio_wrt_dry_air
   - air_pressure
-  - humidity_mixing_ratio_kgkg
   - air_pressure_at_surface
   filepath: define_every_cycle
-  netcdf extension: nc
+  netcdf extension: define_in_mainyaml
   date: define_every_cycle
-
+  check dimensions: false
 observations:
   get values:
     variable change:
       vader: true
-  observers:
-  - obs space:
-      name: define_in_mainyaml
-      obsdatain:
-        engine:
-          type: H5File
-          obsfile: define_every_cycle
-      obsdataout:
-        engine:
-          type: H5File
-          obsfile: define_every_cycle
-      _source: noaa
-      simulated variables: [aerosolOpticalDepth]
-      observed variables: [aerosolOpticalDepth]
-      channels: 4
-    obs operator:
-      name: AodCRTM
-      Absorbers: [H2O,O3]
-      obs options:
-        Sensor_ID: define_by_genint_obsname
-        EndianType: little_endian
-        CoefficientPath: Data/input/crtm/
-        AerosolOption: aerosols_gocart_default
-    obs error:
-      covariance model: diagonal
-    #obs filters:
-    #  - filter: GOMsaver
-    #    filename: define_every_cycle
-    #  - filter: Domain Check
-    #    where:
-    #    - variable:
-    #        name: MetaData/latitude
-    #      minvalue: 41.
-    #      maxvalue: 45.
-    #    - variable:
-    #        name: MetaData/longitude
-    #      minvalue: -80.
-    #      maxvalue: -73.
+  observers: observer/observer_tmp_aodwrfchem.yaml

@@ -205,7 +205,7 @@ if run_jedihofx:
             jobid = output.split()[-1]
             if jobconf['check_freq'] != -1:
                 if jobconf['platform']=='derecho':
-                    pre_sleep_sec = int(jobconf['check_freq']/2)
+                    pre_sleep_sec = max(30, int(jobconf['check_freq']/2))
                     time.sleep(pre_sleep_sec)
                 status = 0
                 while status == 0:
