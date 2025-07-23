@@ -75,8 +75,23 @@ class cropioda(object):
             dst_grp = dst.createGroup(grp)
             for var, variable in src.groups[grp].variables.items():
                 print(f'Processing {grp} / {var}')
-                dst_var = dst_grp.createVariable(var, variable.datatype, variable.dimensions)
-                dst_var.setncatts(variable.__dict__)
+                fill_value = variable.getncattr('_FillValue') if '_FillValue' in variable.ncattrs() else None
+                
+                if fill_value is not None:
+                    try:
+                        dst_var = dst_grp.createVariable(var, variable.datatype, variable.dimensions,
+                                                         fill_value=variable.datatype.type(fill_value))
+                    except Exception as e:
+                        print(f"Could not set _FillValue during variable creation: {e}")
+                        dst_var = dst_grp.createVariable(var, variable.datatype, variable.dimensions)
+                else:
+                    dst_var = dst_grp.createVariable(var, variable.datatype, variable.dimensions)
+                
+                # Then copy remaining attributes
+                for attr in variable.ncattrs():
+                    if attr != '_FillValue':
+                        dst_var.setncattr(attr, variable.getncattr(attr))
+
                 if 'Location' in variable.dimensions:
                     indices = [slice(None)] * variable.ndim
                     dim_index = variable.dimensions.index('Location')
