@@ -51,7 +51,7 @@ os.environ['runworkdir'] = wrkpath
 os.environ['runmetplusdir'] = metplus_runpath
 
 pathlist = [
-    wrkpath, logpath, datapath, inpath, outpath,
+    logpath, outpath,
     metplus_runpath, statsout_path, hofxout_path,
     gvalout_path,
 ]
@@ -71,10 +71,15 @@ else:
         subfhr_hofx = os.path.join(hofxout_path, 'f%.2i'%(fhr))
         os.makedirs(subfhr_hofx)
 
-    # Create symbolic links of needed input/output folders
-    os.symlink(outpath, wrkpath+'/Data/output')
-    for dir in ['bkg','obs','crtm']:
-        os.symlink(dataconf['input'][dir], os.path.join(inpath,dir))
+# Create workdir
+if os.path.exists(wrkpath):
+    shutil.rmtree(wrkpath)
+    print(f'Removing existing {wrkpath}')
+for dir in [wrkpath, datapath, inpath]:
+    os.makedirs(dir)
+os.symlink(outpath, wrkpath+'/Data/output')
+for wrksubdir in ['bkg','obs','crtm']:
+    os.symlink(dataconf['input'][wrksubdir], os.path.join(inpath, wrksubdir))
 
 os.chdir(wrkpath)
 
@@ -119,6 +124,11 @@ if run_jedihofx:
                 avail_sensor_list.append(sensor)
                 obsinfile_list.append(obsinfile)
 
+        if len(avail_obs_list) == 0:
+            print('No observation available, next cycle')
+            print('')
+            continue
+
         # Loop through verification forecast hours
         for fhr in conf['verify_fhours']:
             init_date = cdate - timedelta(hours=fhr)
@@ -156,10 +166,13 @@ if run_jedihofx:
             obsvr_list = []
             for obsname, sensor, obsinfile in zip(avail_obs_list, avail_sensor_list, obsinfile_list):
                 ds = xr.open_dataset(obsinfile)
+
+                columnRetrieval = False
                 if ds.Location.size==0:
                     print(f'No observation available at {cdate_str1}')
                 else:
-                    if genintconf['simulated_varname'] != 'aerosolOpticalDepth':
+                    if any(word in genintconf['simulated_varname'] for word in ['Column', 'Total']):
+                        columnRetrieval = True
                         ret_nlev = ds.Layer.size
                 ds.close()
 
@@ -177,8 +190,12 @@ if run_jedihofx:
                     subobs_conf['obs operator']['obs options']['Sensor_ID'] = sensor
                 else:
                     subobs_conf['obs space']['simulated variables'] = [genintconf['simulated_varname']]
-                    subobs_conf['obs operator']['nlayers_retrieval'] = ret_nlev
-                    subobs_conf['obs operator']['tracer variables'] = [genintconf['tracer_name']]
+                    if columnRetrieval:
+                        subobs_conf['obs operator']['nlayers_retrieval'] = ret_nlev
+                        subobs_conf['obs operator']['tracer variables'] = [genintconf['tracer_name']]
+                    else:
+                        subobs_conf['obs operator']['variables'] = [genintconf['simulated_varname']]
+
                 if 'obs filters' in subobs_conf:
                     for filterconf in subobs_conf['obs filters']:
                         if filterconf['filter']=='GOMsaver':
@@ -193,6 +210,8 @@ if run_jedihofx:
     
             with open(wrkyaml, 'w') as f:
                 yaml.dump(conf_temp, f, sort_keys=False) 
+
+            sys.exit()
 
             # Update jobcard
             job.create_job(in_jobhdr=in_jobhead, jobcard=wrkjobcard, logfile=logfile)

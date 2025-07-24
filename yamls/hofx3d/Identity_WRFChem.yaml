@@ -1,0 +1,64 @@
+time window:
+  begin: define_every_cycle
+  length: define_every_cycle
+geometry:
+  function space: StructuredColumns
+  partitioner: "checkerboard"
+  grid:
+    type : "regional"
+    nx : 222
+    ny : 198
+    dx : 4000.0
+    dy : 4000.0
+    lonlat(centre) : [-75.1618,42.90771]
+    projection :
+        type : "lambert_conformal_conic"
+        longitude0 : -97.0
+        latitude0 : 39.0
+        latitude1  : 30.0
+        latitude2  : 60.0
+        radius: 6370000
+  levels are top down: false
+
+  groups:
+  - variables:
+    - particulatematter2p5
+    levels: 42
+  model data:
+    air_pressure_at_top_of_atmosphere_model: 5000
+    sigma_pressure_hybrid_coordinate_a_coefficient: [
+         0.000e+00, 5.000e-02, 2.000e-01, 4.000e-01, 7.500e-01,
+         1.250e+00, 1.850e+00, 2.550e+00, 3.400e+00, 4.350e+00,
+         5.450e+00, 6.800e+00, 7.850e+00, 8.800e+00, 9.600e+00,
+         1.035e+01, 1.085e+01, 1.135e+01, 1.210e+01, 1.305e+01,
+         1.445e+01, 1.670e+01, 2.005e+01, 2.350e+01, 2.675e+01,
+         2.970e+01, 3.230e+01, 3.390e+01, 3.515e+01, 3.610e+01,
+         3.690e+01, 3.755e+01, 3.810e+01, 3.860e+01, 3.920e+01,
+         4.000e+01, 4.110e+01, 4.240e+01, 4.395e+01, 4.550e+01,
+         4.705e+01, 4.860e+01, 5.000e+01]
+    sigma_pressure_hybrid_coordinate_b_coefficient: [
+         1.000, 0.999, 0.996, 0.992, 0.985,
+         0.975, 0.963, 0.949, 0.932, 0.913,
+         0.891, 0.864, 0.843, 0.824, 0.808,
+         0.793, 0.783, 0.773, 0.758, 0.739,
+         0.711, 0.666, 0.599, 0.53, 0.465,
+         0.406, 0.354, 0.322, 0.297, 0.278,
+         0.262, 0.249, 0.238, 0.228, 0.216,
+         0.200, 0.178, 0.152, 0.121, 0.090,
+         0.059, 0.028, 0.0]
+    nLevels: 42
+  alias:
+  - in code: particulatematter2p5
+    in file: PM2_5_dry
+state:
+  state variables:
+  - particulatematter2p5
+  filepath: define_every_cycle
+  netcdf extension: nc
+  date: define_every_cycle
+  check dimensions: false
+observations:
+  get values:
+    variable change:
+      vader: true
+  observers: observer/observer_identity.yaml
