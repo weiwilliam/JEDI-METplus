@@ -101,7 +101,7 @@ if( ENABLE_OBS )
 
     # ufo
     ecbuild_bundle( PROJECT ufo-data GIT "https://github.com/jcsda-internal/ufo-data.git" BRANCH develop UPDATE )
-    ecbuild_bundle( PROJECT ufo GIT "https://github.com/jcsda-internal/ufo.git"         BRANCH feature/SpcTauCoeff_Format) 
+    ecbuild_bundle( PROJECT ufo GIT "https://github.com/jcsda-internal/ufo.git"         BRANCH feature/crtm_lidar)
     # develop UPDATE )
 endif()
 
