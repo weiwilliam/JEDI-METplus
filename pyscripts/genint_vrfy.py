@@ -133,6 +133,7 @@ if run_jedihofx:
         for fhr in conf['verify_fhours']:
             init_date = cdate - timedelta(hours=fhr)
             init_dstr = init_date.strftime('%Y%m%d%H')
+            init_pdy = init_date.strftime('%Y%m%d')
             init_cyc = init_date.strftime('%H')
             if init_cyc not in dataconf['bkg_init_cyc']:
                 if verbose: print(f'{init_cyc} is not in bkg init cycle list')
@@ -152,7 +153,12 @@ if run_jedihofx:
             conf_temp['state']['date'] = cdate_str3
 
             # Fill {init_date} in bkg_template
-            bkg_file = cdate.strftime(dataconf['bkg_template'].format(init_date=init_dstr))
+            bkg_file = cdate.strftime(dataconf['bkg_template'].format(
+                init_date=init_dstr,
+                init_pdy=init_pdy,
+                init_cyc=init_cyc,
+                fhr=fhr,
+            ))
 
             conf_temp['state']['filepath'] = f"{datapath}/input/bkg/{bkg_file}"
             conf_temp['state']['netcdf extension'] = dataconf['bkg_extension']

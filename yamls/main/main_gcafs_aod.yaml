@@ -1,0 +1,42 @@
+run_jedihofx: True
+run_met_plus: False
+restart: False
+verbose: False
+verify_fhours: [12]
+time:
+  sdate: 2023100100
+  edate: 2023100100
+  dateint: 6
+genint:
+  build: /work2/noaa/jcsda/shihwei/git/caliop_opr/genint-bundle/build
+  jediexec: quenchxx_hofx3d.x
+  jediyaml: hofx3d/AOD_hofx3d_gaussian_gefs.yaml
+  casename: test_gcafs
+  simulated_varname: aerosolOpticalDepth
+Data:
+  input: 
+    obs: '/work2/noaa/stmp/mbenneh/ORION/RUNDIRS/96'
+    bkg: '/work2/noaa/uswrp-hu/mbenneh/GCAFS/global-workflow/COMROOT/96/vrfyarch'
+    crtm: '/work2/noaa/jcsda/shihwei/data/crtm_fix'
+  output: <your/folder/to/keep/outputs>
+  obs_name_list: ['viirs_n20_aod']
+  obs_sensor_list: ['v.viirs-m_j1']
+  obs_template: 'gcdas.%Y%m%d%H/gcdasaeroanl_%H/obs/gcdas.t%Hz.{obsname}.tm00.nc'
+  obs_window_length: 1
+  bkg_template: 'gcafs.{init_pdy}/{init_cyc}/gcafs.t{init_cyc}z.atmf{fhr:03d}'
+  bkg_extension: nc
+  bkg_init_cyc: ['00', '06', '12', '18']
+jobconf:
+  platform: orion 
+  jobname: qxxgenint_gcafs
+  n_node: 4
+  n_task: 128
+  walltime: '0:30:00'
+  account: uswrp-hu
+  partition: orion
+  qos: batch
+  check_freq: 60
+  memory: '112000M'
+metplus:
+  met_conf_temp: StatAnalysis.conf_tmpl
+  ioda2metmpr: ioda2metplusmpr.py 

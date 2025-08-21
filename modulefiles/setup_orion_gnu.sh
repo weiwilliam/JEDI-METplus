@@ -26,3 +26,9 @@ module use /apps/contrib/spack-stack/spack-stack-1.8.0/envs/ue-gcc-12.2.0/instal
 jedi-host-post-load() {
   module unload bufr-query
 }
+
+module load jedi-fv3-env
+module load ewok-env
+module load metplus
+
+module load nco

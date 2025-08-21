@@ -1,0 +1,148 @@
+time window:
+  begin: define_every_cycle
+  length: PT6H
+geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_gaussian
+    N: 96 
+  halo: 1
+  latitude south to north: false
+  groups:
+  - variables:
+    - mass_fraction_of_dust001_in_air
+    - mass_fraction_of_dust002_in_air
+    - mass_fraction_of_dust003_in_air
+    - mass_fraction_of_dust004_in_air
+    - mass_fraction_of_dust005_in_air
+    - mass_fraction_of_sea_salt001_in_air
+    - mass_fraction_of_sea_salt002_in_air
+    - mass_fraction_of_sea_salt003_in_air
+    - mass_fraction_of_sea_salt004_in_air
+    - mass_fraction_of_sea_salt005_in_air
+    - mass_fraction_of_hydrophobic_organic_carbon_in_air
+    - mass_fraction_of_hydrophilic_organic_carbon_in_air
+    - mass_fraction_of_hydrophobic_black_carbon_in_air
+    - mass_fraction_of_hydrophilic_black_carbon_in_air
+    - mass_fraction_of_sulfate_in_air
+    - air_temperature
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - water_vapor_mixing_ratio_wrt_dry_air
+    - air_pressure
+    - relative_humidity
+    - dlsvpdT
+    - qsat
+    - svp
+    levels: 127
+  - variables:
+    - air_pressure_levels
+    levels: 128
+  - variables:
+    - air_pressure_at_surface
+    levels: 1
+  model data:
+    sigma_pressure_hybrid_coordinate_a_coefficient: [
+      0.999, 1.605, 2.532, 3.924, 5.976, 8.947, 13.177, 19.096, 27.243,
+      38.276, 52.984, 72.293, 97.269, 129.11, 169.135, 218.767, 279.506,
+      352.894, 440.481, 543.782, 664.236, 803.164, 961.734, 1140.931, 1341.538,
+      1564.119, 1809.028, 2076.415, 2366.252, 2678.372, 3012.51, 3368.363,
+      3745.646, 4144.164, 4563.881, 5004.995, 5468.017, 5953.848, 6463.864,
+      7000, 7563.494, 8150.661, 8756.529, 9376.141, 10004.553, 10636.851,
+      11268.157, 11893.639, 12508.519, 13108.091, 13687.727, 14242.89,
+      14769.153, 15262.202, 15717.859, 16132.09, 16501.018, 16820.938,
+      17088.324, 17299.852, 17453.084, 17548.35, 17586.771, 17569.697,
+      17498.697, 17375.561, 17202.299, 16981.137, 16714.504, 16405.02,
+      16055.485, 15668.86, 15248.247, 14796.868, 14318.04, 13815.15, 13291.629,
+      12750.924, 12196.468, 11631.659, 11059.827, 10484.208, 9907.927,
+      9333.967, 8765.155, 8204.142, 7653.387, 7115.147, 6591.468, 6084.176,
+      5594.876, 5124.949, 4675.554, 4247.633, 3841.918, 3458.933, 3099.01,
+      2762.297, 2448.768, 2158.238, 1890.375, 1644.712, 1420.661, 1217.528,
+      1034.524, 870.778, 725.348, 597.235, 485.392, 388.734, 306.149, 236.502,
+      178.651, 131.447, 93.74, 64.392, 42.274, 26.274, 15.302, 8.287, 4.19,
+      1.994, 0.81, 0.232, 0.029, 0, 0, 0]
+    sigma_pressure_hybrid_coordinate_b_coefficient: [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.018e-05, 8.141e-05,
+      0.00027469, 0.00065078, 0.00127009, 0.00219248, 0.00347713, 0.00518228,
+      0.00736504, 0.0100812, 0.01338492, 0.01732857, 0.02196239, 0.02733428,
+      0.03348954, 0.04047056, 0.04831661, 0.05706358, 0.06674372, 0.07738548,
+      0.08900629, 0.10159397, 0.11512618, 0.12957622, 0.14491294, 0.1611008,
+      0.17809989, 0.19586605, 0.21435112, 0.23350307, 0.25326633, 0.27358216,
+      0.29438898, 0.3156229, 0.33721805, 0.35910723, 0.38122237, 0.40349507,
+      0.42585716, 0.44824126, 0.47058126, 0.49281296, 0.51487434, 0.53670621,
+      0.55825245, 0.5794605, 0.60028154, 0.62067074, 0.64058751, 0.65999568,
+      0.67886335, 0.69716311, 0.714872, 0.73197126, 0.74844646, 0.76428711,
+      0.77948666, 0.79404217, 0.80795413, 0.8212263, 0.83386517, 0.84588009,
+      0.85728264, 0.86808664, 0.8783077, 0.88796324, 0.89707178, 0.90565324,
+      0.91372836, 0.92131871, 0.92844635, 0.93513376, 0.94140369, 0.94727886,
+      0.95278209, 0.95793599, 0.96276295, 0.9672851, 0.971524, 0.97550088,
+      0.97923642, 0.98275077, 0.98606253, 0.98918509, 0.99212992, 0.99490768,
+      0.9975282, 1]
+    nLevels: 127
+  alias:
+  - in code: mass_fraction_of_dust001_in_air
+    in file: dust1
+  - in code: mass_fraction_of_dust002_in_air
+    in file: dust2
+  - in code: mass_fraction_of_dust003_in_air
+    in file: dust3
+  - in code: mass_fraction_of_dust004_in_air
+    in file: dust4
+  - in code: mass_fraction_of_dust005_in_air
+    in file: dust5
+  - in code: mass_fraction_of_sea_salt001_in_air
+    in file: seas1
+  - in code: mass_fraction_of_sea_salt002_in_air
+    in file: seas2
+  - in code: mass_fraction_of_sea_salt003_in_air
+    in file: seas3
+  - in code: mass_fraction_of_sea_salt004_in_air
+    in file: seas4
+  - in code: mass_fraction_of_sea_salt005_in_air
+    in file: seas5
+  - in code: mass_fraction_of_hydrophobic_organic_carbon_in_air
+    in file: oc1
+  - in code: mass_fraction_of_hydrophilic_organic_carbon_in_air
+    in file: oc2
+  - in code: mass_fraction_of_hydrophobic_black_carbon_in_air
+    in file: bc1
+  - in code: mass_fraction_of_hydrophilic_black_carbon_in_air
+    in file: bc2
+  - in code: mass_fraction_of_sulfate_in_air 
+    in file: so4
+  - in code: water_vapor_mixing_ratio_wrt_moist_air
+    in file: spfh
+  - in code: air_temperature
+    in file: tmp
+  - in code: air_pressure_at_surface
+    in file: pressfc
+
+state:
+  state variables:
+  - mass_fraction_of_dust001_in_air
+  - mass_fraction_of_dust002_in_air
+  - mass_fraction_of_dust003_in_air
+  - mass_fraction_of_dust004_in_air
+  - mass_fraction_of_dust005_in_air
+  - mass_fraction_of_sea_salt001_in_air
+  - mass_fraction_of_sea_salt002_in_air
+  - mass_fraction_of_sea_salt003_in_air
+  - mass_fraction_of_sea_salt004_in_air
+  - mass_fraction_of_sea_salt005_in_air
+  - mass_fraction_of_hydrophobic_organic_carbon_in_air
+  - mass_fraction_of_hydrophilic_organic_carbon_in_air
+  - mass_fraction_of_hydrophobic_black_carbon_in_air
+  - mass_fraction_of_hydrophilic_black_carbon_in_air
+  - mass_fraction_of_sulfate_in_air
+  - air_temperature
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - air_pressure_at_surface
+  filepath: define_every_cycle
+  netcdf extension: nc4
+  date: define_every_cycle
+  check dimensions: false
+observations:
+  get values:
+    variable change:
+      vader: true
+  observers: observer/observer_tmp_gcafs.yaml
