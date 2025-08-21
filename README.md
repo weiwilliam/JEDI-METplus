@@ -38,8 +38,15 @@ Clone this repo recusively with the command below
 
 ## Using existing build on Derecho
 `/glade/work/swei/Git/JEDI-METplus/genint-bundle/build`  
-1. Update `GENINT_BUILD` to `/glade/work/swei/Git/JEDI-METplus/genint-bundle/build`
-2. `source ush/setup.sh <your repo path> derecho gnu`
+1. Update `GENINT_BUILD` in `ush/setup.sh` to `/glade/work/swei/Git/JEDI-METplus/genint-bundle/build`
+2. `source ush/setup.sh <your/repo/path> derecho gnu`\
+   It will create venv for you and point your executables to my build.
+
+## Using existing build on Orion
+`/work2/noaa/jcsda/shihwei/git/caliop_opr/genint-bundle/build`  
+1. Update `GENINT_BUILD` in `ush/setup.sh` to `/work2/noaa/jcsda/shihwei/git/caliop_opr/genint-bundle/build`
+2. `source ush/setup.sh <your/repo/path> orion gnu`\
+   It will create venv for you and point your executables to my build.
 
 ## Preprocesses for use case of WRF
 1. Create air pressure and potential temperature:\
