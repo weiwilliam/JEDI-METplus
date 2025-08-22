@@ -4,8 +4,8 @@ restart: False
 verbose: False
 verify_fhours: [12]
 time:
-  sdate: 2023100100
-  edate: 2023100100
+  sdate: 2023100200
+  edate: 2023100200
   dateint: 6
 genint:
   build: /work2/noaa/jcsda/shihwei/git/caliop_opr/genint-bundle/build
@@ -29,8 +29,8 @@ Data:
 jobconf:
   platform: orion 
   jobname: qxxgenint_gcafs
-  n_node: 4
-  n_task: 128
+  n_node: 1
+  n_task: 32
   walltime: '0:30:00'
   account: uswrp-hu
   partition: orion

@@ -84,8 +84,8 @@ class setup_job(object):
         
         if self.platform == 's4':
             self.execcmd = which('mpiexec')+' -n %s' % (self.n_task)
-        elif self.platform in ['orion', 'discover']:
-            self.execcmd = which('mpirun')
+        elif self.platform == 'orion':
+            self.execcmd = which('srun')
         elif self.platform == 'derecho':
             self.execcmd = which('mpiexec')+' -n %s -ppn %s' % (self.n_task, str(int(self.n_task / self.n_node)))
      
