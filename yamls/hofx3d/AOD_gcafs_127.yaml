@@ -28,8 +28,13 @@ geometry:
     - air_temperature
     - water_vapor_mixing_ratio_wrt_moist_air
     - water_vapor_mixing_ratio_wrt_dry_air
+    - total_water_mixing_ratio_wrt_dry_air
+    - cloud_ice_mixing_ratio_wrt_dry_air
+    - cloud_liquid_water_mixing_ratio_wrt_dry_air
+    - rain_mixing_ratio_wrt_dry_air
     - air_pressure
     - relative_humidity
+    - water_vapor_mixing_ratio_wrt_moist_air_and_condensed_water
     - dlsvpdT
     - qsat
     - svp
@@ -112,6 +117,12 @@ geometry:
     in file: so4
   - in code: water_vapor_mixing_ratio_wrt_moist_air
     in file: spfh
+  - in code: cloud_ice_mixing_ratio_wrt_dry_air
+    in file: icmr
+  - in code: cloud_liquid_water_mixing_ratio_wrt_dry_air
+    in file: clwmr
+  - in code: rain_mixing_ratio_wrt_dry_air
+    in file: rwmr
   - in code: air_temperature
     in file: tmp
   - in code: air_pressure_at_surface
@@ -136,6 +147,9 @@ state:
   - mass_fraction_of_sulfate_in_air
   - air_temperature
   - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_ice_mixing_ratio_wrt_dry_air
+  - cloud_liquid_water_mixing_ratio_wrt_dry_air
+  - rain_mixing_ratio_wrt_dry_air
   - air_pressure_at_surface
   filepath: define_every_cycle
   netcdf extension: nc4

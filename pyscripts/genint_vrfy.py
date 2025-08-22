@@ -182,10 +182,14 @@ if run_jedihofx:
                         ret_nlev = ds.Layer.size
                 ds.close()
 
-                hofxoutdir = f'{hofxout_path}/f{fhr:02}/{obsname}'
-                if not os.path.exists(hofxoutdir): os.makedirs(hofxoutdir)
                 hofxout = cdate.strftime(dataconf['obs_template'].format(obs_name=obsname, filetype='hofx'))
                 obsoutfile = f'{hofxout_path}/f{fhr:02}/{hofxout}'
+
+                # Check existence of hofx saving folder
+                hofxoutdir = os.path.dirname(obsoutfile)
+                if not os.path.exists(hofxoutdir):
+                    os.makedirs(hofxoutdir)
+
                 hofx_list.append(obsoutfile)
 
                 subobs_conf = yaml.load(open(observer_yaml_tmpl), Loader=yaml.FullLoader)
@@ -217,8 +221,6 @@ if run_jedihofx:
             with open(wrkyaml, 'w') as f:
                 yaml.dump(conf_temp, f, sort_keys=False) 
 
-            sys.exit()
-
             # Update jobcard
             job.create_job(in_jobhdr=in_jobhead, jobcard=wrkjobcard, logfile=logfile)
     
@@ -226,6 +228,8 @@ if run_jedihofx:
             with open(wrkjobcard, 'a') as f:
                 f.write(cmd_str)
         
+            sys.exit()
+
             output = job.submit(wrkjobcard)
             jobid = output.split()[-1]
             if jobconf['check_freq'] != -1:
