@@ -22,7 +22,7 @@ STAT_ANALYSIS_RUNTIME_FREQ = RUN_ONCE_PER_INIT_OR_VALID
 ###
 
 STAT_ANALYSIS_OUTPUT_DIR = {OUTPUT_BASE}/../Data/output/stats
-STAT_ANALYSIS_OUTPUT_TEMPLATE = f{lead_hour}/{valid?fmt=%Y%m%d%H}.out
+STAT_ANALYSIS_OUTPUT_TEMPLATE = f{lead_hour}/CTC.@varname@.{valid?fmt=%Y%m%d%H}.out
 
 ###
 # StatAnalysis Settings
@@ -31,10 +31,14 @@ STAT_ANALYSIS_OUTPUT_TEMPLATE = f{lead_hour}/{valid?fmt=%Y%m%d%H}.out
 
 MODEL1 = NA
 MODEL1_OBTYPE = NA
-MODEL1_STAT_ANALYSIS_LOOKIN_DIR = python @embedded_py@ @embedded_input@ '@mask_by_str@'
-MODEL1_STAT_ANALYSIS_DUMP_ROW_TEMPLATE = SL1L2_dump.out
-STAT_ANALYSIS_JOB1 = -job aggregate_stat -dump_row [dump_row_file] -line_type MPR -out_line_type SL1L2 -by FCST_VAR
-#STAT_ANALYSIS_JOB1 = -job aggregate_stat -dump_row [dump_row_file] -out_line_type FHO,CTC,CTS,CNT -by FCST_VAR -out_cnt_logic UNION
+MODEL1_STAT_ANALYSIS_LOOKIN_DIR = python @embedded_py@ @embedded_input@ '@iodavarname@' '@mask_by_str@'
+MODEL1_STAT_ANALYSIS_DUMP_ROW_TEMPLATE = f{lead_hour}/@varname@.dump.out
+
+# PM2.5 EPA regualtion Good: 0-9, Moderate: 9-35, Unhealthy: >35
+STAT_ANALYSIS_JOB1 = -line_type MPR -job aggregate_stat -dump_row [dump_row_file] -out_line_type CTC -by FCST_VAR -out_cnt_logic UNION -out_thresh "@OUTTHRESH@"
+#">0&&<=9.,>9&&<=35,>35"
+# O3 EPA regulation, 70 ppb, which is 7e-8
+#STAT_ANALYSIS_JOB1 = -job aggregate_stat -dump_row [dump_row_file] -out_line_type FHO,CTC,CTS,CNT -by FCST_VAR -out_cnt_logic UNION -out_thresh ">0&&<=7e-8,>7e-8"
 
 
 MODEL_LIST = 

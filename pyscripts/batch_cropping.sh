@@ -2,12 +2,13 @@
 
 pyhomedir="/glade/work/swei/Git/JEDI-METplus/pyscripts"
 pyscript="${pyhomedir}/crop_iodafile.py"
-polygon="${pyhomedir}/../etc/polygons/reuires_polygon.csv"
+polygon="${pyhomedir}/../etc/polygons/wxaq_polygon.csv"
 
-cropped_suffix='ryan'
+cropped_suffix='wxaq'
 obs_folder='/glade/derecho/scratch/swei/Dataset/input/obs'
-out_folder='/glade/derecho/scratch/swei/Dataset/input/obs/reu-ires'
-target_list="tropomi_s5p_co_total" # tropomi_s5p_no2_troposphere viirs_aod_db_n20 viirs_aod_dt_n20"
+out_folder='/glade/derecho/scratch/swei/Dataset/input/obs'
+#"tropomi_s5p_co_total tropomi_s5p_no2_troposphere viirs_aod_db_n20 viirs_aod_dt_n20"
+target_list="airnow"
 
 for target in $target_list
 do

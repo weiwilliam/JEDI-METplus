@@ -10,24 +10,14 @@ geometry:
     ny : 198
     dx : 4000.0
     dy : 4000.0
-    lonlat(centre):
-    - -75.95349
-    - 42.7153
-    projection:
-      type: lambert_conformal_conic
-      longitude0: -97.0
-      latitude0: 40.0
-      latitude1: 33.0
-      latitude2: 45.0
-      radius: 6370000
-#    lonlat(centre) : [-75.1618,42.90771]
-#    projection :
-#        type : "lambert_conformal_conic"
-#        longitude0 : -97.0
-#        latitude0 : 39.0
-#        latitude1  : 30.0
-#        latitude2  : 60.0
-#        radius: 6370000
+    lonlat(centre) : [-75.1618,42.90771]
+    projection :
+        type : "lambert_conformal_conic"
+        longitude0 : -97.0
+        latitude0 : 39.0
+        latitude1  : 30.0
+        latitude2  : 60.0
+        radius: 6370000
   levels are top down: false
 
   groups:

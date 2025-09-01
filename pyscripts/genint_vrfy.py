@@ -16,6 +16,7 @@ from metplus.util import metplus_check
 from metplus.util import pre_run_setup, run_metplus, post_run_cleanup
 from metplus import __version__ as metplus_version
 from functions import setup_job, get_dates
+from dictionaries import jedivar_dict, epa_reg_dict
 
 # Load the configuration defined by main yaml file
 main_yaml = sys.argv[1]
@@ -56,6 +57,19 @@ pathlist = [
     gvalout_path,
 ]
 
+# Handle verify_fhours
+if isinstance(conf['verify_fhours'], str):
+    verify_fhours_list = []
+    for part in conf['verify_fhours'].split(","):
+        if "-" in part:
+            start, end = map(int, part.split("-"))
+            verify_fhours_list.extend(range(start, end + 1))
+        else:
+            verify_fhours_list.append(int(part))
+elif isinstance(conf['verify_fhours'], list):
+   verify_fhours_list = conf['verify_fhours']
+print(verify_fhours_list)
+
 if restart:
     for dir in pathlist:
         if not os.path.exists(dir):
@@ -67,7 +81,7 @@ else:
         else:
             shutil.rmtree(dir)
             os.makedirs(dir)
-    for fhr in conf['verify_fhours']:
+    for fhr in verify_fhours_list: # conf['verify_fhours']:
         subfhr_hofx = os.path.join(hofxout_path, 'f%.2i'%(fhr))
         os.makedirs(subfhr_hofx)
 
@@ -87,11 +101,12 @@ if len(dataconf['obs_name_list']) != len(dataconf['obs_sensor_list']):
     if verbose: print(dataconf['obs_name_list'], dataconf['obs_sensor_list'])
     raise Exception('obs_name_list and obs_sensor_list are not in same size')
 
+dates = get_dates(timeconf['sdate'], timeconf['edate'], timeconf['dateint'])
+
 if run_jedihofx:
    
     window_length = dataconf['obs_window_length']
     wlnth = timedelta(hours=window_length)
-    dates = get_dates(timeconf['sdate'], timeconf['edate'], timeconf['dateint'])
 
     # Setup job confs    
     job = setup_job(jobconf)
@@ -130,7 +145,7 @@ if run_jedihofx:
             continue
 
         # Loop through verification forecast hours
-        for fhr in conf['verify_fhours']:
+        for fhr in verify_fhours_list:
             init_date = cdate - timedelta(hours=fhr)
             init_dstr = init_date.strftime('%Y%m%d%H')
             init_pdy = init_date.strftime('%Y%m%d')
@@ -228,8 +243,6 @@ if run_jedihofx:
             with open(wrkjobcard, 'a') as f:
                 f.write(cmd_str)
         
-            sys.exit()
-
             output = job.submit(wrkjobcard)
             jobid = output.split()[-1]
             if jobconf['check_freq'] != -1:
@@ -254,55 +267,73 @@ if run_met_plus:
     wk_statanalysis_conf = os.path.join(wrkpath, 'statanalysis.conf')
     embedded_py = os.path.join(srcpath, 'pyscripts', metconf['ioda2metmpr'])
 
-    # Update the StatAnalysis.conf
-    leadtime_liststr = ''
-    for fhr in conf['verify_fhours']:
-        fhr_hofx_dir = os.path.join(hofxout_path, 'f%.2i'%(fhr))
-        if len(os.listdir(fhr_hofx_dir)) != 0:
-            leadtime_liststr += str(fhr)+', '
-    
-    py_input = '%s/f{lead_hour}/hofx_%s' %(hofxout_path, dataconf['obs_template'].replace('%Y%m%d%H', '{valid?fmt=%Y%m%d%H}'))
-    
-    with open(in_statanalysis_conf, 'r') as file:
-        tmp_mp_confs = file.read()
-    mp_confs = tmp_mp_confs.replace('@INPUT_BASE@', wrkpath)
-    mp_confs = mp_confs.replace('@OUTPUT_BASE@', metplus_runpath )
-    mp_confs = mp_confs.replace('@PARM_BASE@', os.environ['metplus_ROOT'])
-    mp_confs = mp_confs.replace('@valid_begin@', str(timeconf['sdate']))
-    mp_confs = mp_confs.replace('@valid_end@', str(timeconf['edate']))
-    mp_confs = mp_confs.replace('@valid_inc@', '%iH'%(timeconf['dateint']))
-    mp_confs = mp_confs.replace('@leadtime@', leadtime_liststr)
-    mp_confs = mp_confs.replace('@embedded_py@', embedded_py)
-    mp_confs = mp_confs.replace('@embedded_input@', py_input)
-    mp_confs = mp_confs.replace('@mask_by_str@', metconf['mask_by'])
-    #mp_confs = mp_confs.replace('@OBSTYPE@',obs_type)
-    with open(wk_statanalysis_conf, 'w') as file:
-        file.write(mp_confs)
-    
-    # Running METplus
-    mp_jobcard = os.path.join(wrkpath, 'run_metplus.batch')
-    mp_logfile = os.path.join(logpath, 'runmp.%s_%s.log' %(str(timeconf['sdate']), str(timeconf['edate'])))
+    for cdate in dates:
+        cdate_str1 = cdate.strftime('%Y%m%d%H')
 
-    if metconf['submit']:
-        # Setup job confs    
-        mpjob = setup_job(metconf)
-        in_jobhead = os.path.join(srcpath, 'etc', mpjob.header)
+        leadtime_liststr = ''
+        for obsname in dataconf['obs_name_list']:
+            hofxfile = cdate.strftime(dataconf['obs_template'].format(obs_name=obsname, filetype='hofx'))
+            for fhr in verify_fhours_list:
+                fhr_hofxfile = os.path.join(hofxout_path, 'f%.2i'%(fhr), hofxfile)
+                if os.path.exists(fhr_hofxfile):
+                    leadtime_liststr += str(fhr)+', '
+        
+            py_input = '%s/f{lead_hour}/%s' %(hofxout_path, hofxfile)
 
-        mpjob.create_job(in_jobhdr=in_jobhead, jobcard=mp_jobcard, logfile=mp_logfile)
-
-        cmd_str = 'run_metplus.py -c ' + wk_statanalysis_conf
-        with open(mp_jobcard,'a') as f:
-            f.write(cmd_str)
-
-        output = mpjob.submit(mp_jobcard)
-        jobid = output.split()[-1]
-        if metconf['platform']=='derecho': time.sleep(15)
-        if metconf['check_freq'] != -1:
-            status = 0
-            while status == 0:
-                status = mpjob.check(jobid)
-                if status == 0: time.sleep(metconf['check_freq'])
-    else:
-        metplus_conf = pre_run_setup(wk_statanalysis_conf)
-        total_errors = run_metplus(metplus_conf)
-        post_run_cleanup(metplus_conf, 'METplus', total_errors)
+        if len(leadtime_liststr)==0:
+            print(f"'No hofx files for fhr {conf['verify_fhours']} available for {cdate_str1}")
+            continue
+        
+        for var in metconf['variables']:
+            iodavarname = jedivar_dict[var]
+            outthresh_str = epa_reg_dict[var]
+            # Update the StatAnalysis.conf
+            with open(in_statanalysis_conf, 'r') as file:
+                tmp_mp_confs = file.read()
+            mp_confs = tmp_mp_confs.replace('@INPUT_BASE@', wrkpath)
+            mp_confs = mp_confs.replace('@OUTPUT_BASE@', metplus_runpath )
+            mp_confs = mp_confs.replace('@PARM_BASE@', os.environ['metplus_ROOT'])
+            mp_confs = mp_confs.replace('@valid_begin@', cdate_str1)
+            mp_confs = mp_confs.replace('@valid_end@', cdate_str1)
+            mp_confs = mp_confs.replace('@valid_inc@', '%iH'%(timeconf['dateint']))
+            mp_confs = mp_confs.replace('@leadtime@', leadtime_liststr)
+            mp_confs = mp_confs.replace('@varname@', var)
+            mp_confs = mp_confs.replace('@embedded_py@', embedded_py)
+            mp_confs = mp_confs.replace('@embedded_input@', py_input)
+            mp_confs = mp_confs.replace('@iodavarname@', iodavarname)
+            mp_confs = mp_confs.replace('@mask_by_str@', metconf['mask_by'])
+            mp_confs = mp_confs.replace('@OUTTHRESH@', outthresh_str)
+            #mp_confs = mp_confs.replace('@OBSTYPE@',obs_type)
+            with open(wk_statanalysis_conf, 'w') as file:
+                file.write(mp_confs)
+            
+            # Running METplus
+            mp_jobcard = os.path.join(wrkpath, 'run_metplus.batch')
+            mp_logfile = os.path.join(logpath, 'runmp.%s_%s.log' %(str(timeconf['sdate']), str(timeconf['edate'])))
+        
+            if metconf['submit']:
+                # Setup job confs    
+                mpjob = setup_job(metconf)
+                in_jobhead = os.path.join(srcpath, 'etc', mpjob.header)
+        
+                mpjob.create_job(in_jobhdr=in_jobhead, jobcard=mp_jobcard, logfile=mp_logfile)
+        
+                cmd_str = 'run_metplus.py -c ' + wk_statanalysis_conf
+                with open(mp_jobcard,'a') as f:
+                    f.write(cmd_str)
+        
+                output = mpjob.submit(mp_jobcard)
+                jobid = output.split()[-1]
+                if metconf['platform']=='derecho': time.sleep(15)
+                if metconf['check_freq'] != -1:
+                    status = 0
+                    while status == 0:
+                        status = mpjob.check(jobid)
+                        if status == 0: time.sleep(metconf['check_freq'])
+            else:
+                if metconf['run']:
+                    metplus_conf = pre_run_setup(wk_statanalysis_conf)
+                    total_errors = run_metplus(metplus_conf)
+                    post_run_cleanup(metplus_conf, 'METplus', total_errors)
+                else:
+                    print(f'{wk_statanalysis_conf} is created')
