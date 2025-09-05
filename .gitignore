@@ -2,3 +2,5 @@ workdir/*
 output/*
 logs/*
 venv/*
+.ipynb_checkpoints/
+__pycache__/
