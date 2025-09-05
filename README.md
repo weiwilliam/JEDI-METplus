@@ -1,5 +1,5 @@
 # JEDI-METplus
-Workflow to interface JEDI component (generic-interface) and METplus for constituents model evaluation.
+Workflow to use VIND interface JEDI components and METplus for constituents model evaluation.
 
 ## Clone the code
 Clone this repo recusively with the command below
@@ -9,15 +9,17 @@ Clone this repo recusively with the command below
 * Platforms with JCSDA spack-stack package.
 * Module loading scripts: derecho_intel (v1.8.0) and derecho_gnu (v1.9.1)
 
-## Supported (Tested) models 
+## Tested models 
 * Lambert CC projection: WRF-Chem
 * Reducing Gaussian Lon-Lat: GEFS-Aerosols
 * Regular Lon-Lat: MERRA-2
 
-## Supported (Tested) measurements
+## Tested measurements
 * TropOMI NO2 and CO
-* AOD from MODIS, VIIRS, and OCI (PACE)
+* AOD from MODIS, VIIRS, OCI (PACE), AERONET
 * TEMPO NO2, CO
+* PANDORA NO2
+* AirNow O3 and PM2.5
 
 ## Use of this interface
 * Prerequisites: observation files in IODA format and model outputs in NetCDF (GRIB2 may be supported later).
@@ -27,7 +29,7 @@ Clone this repo recusively with the command below
 3. Update the main and hofx3d yaml files as needed. Check README.md under `yamls/<main, hofx3d>` for details.
 4. Execute `pyscripts/genint_vrfy.py <main yaml>`
 
-## Build generic interface (genint-bundle)
+## Build VIND (VIND-bundle)
 1. Create the `<repo>/genint-bundle/build` folder
 2. Create virtual python env `<repo>/venv` if you do not have one.
    `source ush/setup.sh <repo path> <platform> <compiler>`
